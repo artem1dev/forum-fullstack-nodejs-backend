@@ -8,6 +8,7 @@ import path from "path";
 import "dotenv/config";
 
 import { apiLimiter, errorHandler } from "./middlewares/index.js";
+import AppRouter from "./routes/index.js";
 
 // CORS configuration
 const corsOptions = {
@@ -42,5 +43,6 @@ app.use(bodyParser.urlencoded({ extended: false, limit: "1000mb" }));
 
 // Global error handler middleware
 app.use(errorHandler);
+appRouter.init();
 
 export default app;
