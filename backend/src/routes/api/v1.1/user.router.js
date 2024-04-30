@@ -3,7 +3,7 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import userControllerV1_1 from "../../../users/v1.1/user.controller.v1.1.js";
-import { validateRequestSchema, tryCatch } from "../../../middlewares/index.js";
+import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
 //import { checkUserOnCreate, checkUserOnUpdate } from "../../validations/user.validation.js";
 
 const userRouter = Router();
@@ -27,6 +27,7 @@ userRouter.get(
 
 userRouter.post(
     "/",
+    isAuthorized,
     //isAdmin,
     //checkUserOnCreate,
     validateRequestSchema,
@@ -35,6 +36,7 @@ userRouter.post(
 
 userRouter.patch(
     "/:id",
+    isAuthorized,
     //isAdmin,
     //checkUserOnUpdate,
     validateRequestSchema,
@@ -43,6 +45,7 @@ userRouter.patch(
 
 userRouter.delete(
     "/:id",
+    isAuthorized,
     //isAdmin,
     validateRequestSchema,
     tryCatch(userControllerV1_1.delete.bind(userControllerV1_1)),
