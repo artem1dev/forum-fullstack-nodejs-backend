@@ -9,6 +9,7 @@ import "dotenv/config";
 
 import { apiLimiter, errorHandler } from "./middlewares/index.js";
 import AppRouter from "./routes/index.js";
+import { connectToDB } from "./database/db.js";
 
 // CORS configuration
 const corsOptions = {
@@ -17,6 +18,7 @@ const corsOptions = {
     optionSuccessStatus: 200,
 };
 
+connectToDB();
 const app = express(); // Create a new Express application
 const appRouter = new AppRouter(app);
 
