@@ -41,6 +41,24 @@ export default class UserServiceV1_1 {
     }
 
     /**
+     * Retrieves a user by login
+     * @param {string} id - The user's login
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async selectByLogin(login) {
+        try {
+            const user = await User.findOne({ login: login });
+            if (user) {
+                return { code: 200, values: user };
+            }
+            return { code: 404, values: { status: "user_not_found" } };
+        } catch (error) {
+            logger.error(`Error fetching user by login: ${error.message}`);
+            return { code: 500, values: "Error fetching user by login" };
+        }
+    }
+
+    /**
      * Creates a new user
      * @param {Object} data - Data for creating the user
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values

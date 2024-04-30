@@ -1,6 +1,8 @@
-import CommentServiceV1_2 from "./comment.service.v1.2.js";
+import mongoSanitize from "express-mongo-sanitize";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
+
+import CommentServiceV1_2 from "./comment.service.v1.2.js";
 
 /**
  * Controller class for comment-related operations.
@@ -18,7 +20,8 @@ export class CommentControllerV1_2 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async selectAll(req, res) {
-
+        const result = await this.service.selectAll();
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -28,7 +31,9 @@ export class CommentControllerV1_2 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async selectById(req, res) {
-
+        const { id } = req.params;
+        const result = await this.service.selectById(id);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -38,7 +43,16 @@ export class CommentControllerV1_2 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async create(req, res) {
-
+        mongoSanitize.sanitize(req.body);
+        const { body } = req;
+        const data = {
+            content: body.content,
+            parentId: body.parentId,
+            userId: body.userId,
+            postId: body.postId
+        };
+        const result = await this.service.create(data);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -48,7 +62,11 @@ export class CommentControllerV1_2 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async update(req, res) {
-
+        mongoSanitize.sanitize(req.body);
+        const { id } = req.params;
+        const newData = req.body;
+        const result = await this.service.update(id, newData);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -58,7 +76,9 @@ export class CommentControllerV1_2 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async delete(req, res) {
-
+        const { id } = req.params;
+        const result = await this.service.delete(id);
+        return { code: result.code, values: result.values };
     }
 }
 

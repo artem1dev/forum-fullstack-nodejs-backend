@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import "dotenv/config";
 
 import PostServiceV1_1 from "./post.service.v1.1.js";
+
 /**
  * Controller class for post-related operations.
  * @class

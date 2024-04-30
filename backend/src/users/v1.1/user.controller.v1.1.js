@@ -3,6 +3,7 @@ import mongoSanitize from "express-mongo-sanitize";
 import "dotenv/config";
 
 import UserServiceV1_1 from "./user.service.v1.1.js";
+
 /**
  * Controller class for user-related operations.
  * @class
