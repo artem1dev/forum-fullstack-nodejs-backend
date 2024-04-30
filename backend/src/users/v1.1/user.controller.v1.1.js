@@ -1,7 +1,8 @@
-import UserServiceV1_1 from "./user.service.v1.1.js";
 import jwt from "jsonwebtoken";
+import mongoSanitize from "express-mongo-sanitize";
 import "dotenv/config";
 
+import UserServiceV1_1 from "./user.service.v1.1.js";
 /**
  * Controller class for user-related operations.
  * @class
@@ -18,7 +19,8 @@ export class UserControllerV1_1 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async selectAll(req, res) {
-
+        const result = await this.service.selectAll();
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -28,7 +30,9 @@ export class UserControllerV1_1 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async selectById(req, res) {
-
+        const { id } = req.params;
+        const result = await this.service.selectById(id);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -38,7 +42,15 @@ export class UserControllerV1_1 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async create(req, res) {
-
+        mongoSanitize.sanitize(req.body);
+        const { body } = req;
+        const data = {
+            login: body.login,
+            password: body.password,
+            role: body.role
+        };
+        const result = await this.service.create(data);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -48,7 +60,11 @@ export class UserControllerV1_1 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async update(req, res) {
-
+        mongoSanitize.sanitize(req.body);
+        const { id } = req.params;
+        const newData = req.body;
+        const result = await this.service.update(id, newData);
+        return { code: result.code, values: result.values };
     }
 
     /**
@@ -58,7 +74,9 @@ export class UserControllerV1_1 {
      * @returns {Promise<{code: number, values: any}>} The result of the operation.
      */
     async delete(req, res) {
-
+        const { id } = req.params;
+        const result = await this.service.delete(id);
+        return { code: result.code, values: result.values };
     }
 }
 
