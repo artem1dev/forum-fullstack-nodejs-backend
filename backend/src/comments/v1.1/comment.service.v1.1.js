@@ -1,4 +1,4 @@
-import logger from "../config/logger.js";
+import logger from "../../config/logger.js";
 import Comment from "../comment.model.js";
 
 /**
@@ -10,7 +10,16 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async selectAll() {
-
+        try {
+            const comment = await Comment.find({});
+            if (comment) {
+                return { code: 200, values: comment };
+            }
+            return { code: 404, values: { status: "comments_not_found" } };
+        } catch (error) {
+            logger.error(`Error selecting comments: ${error.message}`);
+            return { code: 500, values: `Error selecting comments: ${error}` };
+        }
     }
 
     /**
@@ -19,7 +28,16 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async selectById(id) {
-
+        try {
+            const comment = await Comment.findById(id);
+            if (comment) {
+                return { code: 200, values: comment };
+            }
+            return { code: 404, values: { status: "comment_not_found" } };
+        } catch (error) {
+            logger.error(`Error selecting comment: ${error.message}`);
+            return { code: 500, values: `Error selecting comment: ${error}` };
+        }
     }
 
     /**
@@ -28,7 +46,19 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async create(data) {
-
+        try {
+            const newComment = new Comment({
+                content: data.content,
+                parentId: data.parentId,
+                userId: data.userId,
+                postId: data.postId
+            });
+            await newComment.save();
+            return { code: 200, values: "Comment created" };
+        } catch (error) {
+            logger.error(`Error creating comment: ${error.message}`);
+            return { code: 500, values: `Error creating comment: ${error}` };
+        }
     }
 
     /**
@@ -38,7 +68,16 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async update(id, newData) {
-
+        try {
+            const comment = await Comment.findByIdAndUpdate(id, { $set: newData }, { new: true });
+            if (comment) {
+                return { code: 200, values: "Comment updated" };
+            }
+            return { code: 404, values: { status: "comment_not_found" } };
+        } catch (error) {
+            logger.error(`Error updating comment: ${error.message}`);
+            return { code: 500, values: "Error updating comment" };
+        }
     }
 
     /**
@@ -47,7 +86,16 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async delete(id) {
-
+        try {
+            const result = await Comment.findByIdAndDelete(id);
+            if (result) {
+                return { code: 200, values: "Comment deleted successfully" };
+            }
+            return { code: 404, values: { status: "comments_not_found" } };
+        } catch (error) {
+            logger.error(`Error deleting comments: ${error.message}`);
+            return { code: 500, values: `Error deleting comments: ${error}` };
+        }
     }
 
     /**
@@ -57,6 +105,18 @@ export default class CommentServiceV1_1 {
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async isExist(field, value) {
-
+        try {
+            const whereClause = {};
+            whereClause[field] = value;
+            const comment = await Comment.findOne({
+                where: whereClause,
+            });
+            if (comment) {
+                return comment;
+            }
+        } catch (error) {
+            logger.error(`Error fetching comment by ${field}: ${error.message}`);
+            return { code: 500, values: `Error fetching comment by ${field}` };
+        }
     }
 }
