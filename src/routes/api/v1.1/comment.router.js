@@ -3,7 +3,7 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import commentControllerV1_1 from "../../../comments/v1.1/comment.controller.v1.1.js";
-import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
+import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkCommentOnCreate, checkCommentOnUpdate } from "../../../validations/comment.validation.js";
 
 const commentRouter = Router();
@@ -35,7 +35,6 @@ commentRouter.post(
 commentRouter.post(
     "/:id/like",
     isAuthorized,
-    //isAdmin,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.setLike.bind(commentControllerV1_1)),
 );
@@ -43,7 +42,7 @@ commentRouter.post(
 commentRouter.patch(
     "/:id",
     isAuthorized,
-    //isAdmin,
+    isAdminOrAccess,
     checkCommentOnUpdate,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.update.bind(commentControllerV1_1)),
@@ -52,7 +51,7 @@ commentRouter.patch(
 commentRouter.delete(
     "/:id",
     isAuthorized,
-    //isAdmin,
+    isAdminOrAccess,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.delete.bind(commentControllerV1_1)),
 );

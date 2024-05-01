@@ -3,7 +3,7 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import userControllerV1_1 from "../../../users/v1.1/user.controller.v1.1.js";
-import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
+import { validateRequestSchema, tryCatch, isAdmin, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkUserOnCreate, checkUserOnUpdate } from "../../../validations/user.validation.js";
 
 const userRouter = Router();
@@ -14,7 +14,8 @@ if (process.env.NODE_ENV !== "test") {
 
 userRouter.get(
     "/",
-    //isAdmin
+    isAuthorized,
+    isAdmin,
     validateRequestSchema,
     tryCatch(userControllerV1_1.selectAll.bind(userControllerV1_1)),
 );
@@ -28,7 +29,7 @@ userRouter.get(
 userRouter.post(
     "/",
     isAuthorized,
-    //isAdmin,
+    isAdmin,
     checkUserOnCreate,
     validateRequestSchema,
     tryCatch(userControllerV1_1.create.bind(userControllerV1_1)),
@@ -37,7 +38,7 @@ userRouter.post(
 userRouter.patch(
     "/:id",
     isAuthorized,
-    //isAdmin,
+    isAdminOrAccess,
     checkUserOnUpdate,
     validateRequestSchema,
     tryCatch(userControllerV1_1.update.bind(userControllerV1_1)),
@@ -46,7 +47,7 @@ userRouter.patch(
 userRouter.delete(
     "/:id",
     isAuthorized,
-    //isAdmin,
+    isAdminOrAccess,
     validateRequestSchema,
     tryCatch(userControllerV1_1.delete.bind(userControllerV1_1)),
 );

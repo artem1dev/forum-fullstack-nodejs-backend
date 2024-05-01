@@ -6,7 +6,7 @@ import hashPassword from "./hashPassword.middleware.js";
 import isExist from "./isExist.middleware.js";
 import errorHandler from "./errorHandler.middleware.js";
 import { UserRolesConst } from "./constants.middleware.js";
-import { isAdmin, isAuthorized } from "./isAccess.middleware.js";
+import { isAdmin, isAuthorized, isAdminOrAccess } from "./isAccess.middleware.js";
 
 export {
     validateRequestSchema,
@@ -18,6 +18,7 @@ export {
     errorHandler,
     isExist,
     isAdmin,
+    isAdminOrAccess,
     isAuthorized,
     UserRolesConst,
 };
