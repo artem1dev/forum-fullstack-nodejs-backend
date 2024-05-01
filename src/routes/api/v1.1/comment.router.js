@@ -3,6 +3,8 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import commentControllerV1_1 from "../../../comments/v1.1/comment.controller.v1.1.js";
+import CommentServiceV1_1 from "../../../comments/v1.1/comment.service.v1.1.js";
+import { isCommentNotExist } from "../../../comments/comment.script.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkCommentOnCreate, checkCommentOnUpdate } from "../../../validations/comment.validation.js";
 
@@ -21,6 +23,7 @@ commentRouter.get(
 commentRouter.get(
     "/:id",
     validateRequestSchema,
+    isCommentNotExist(CommentServiceV1_1),
     tryCatch(commentControllerV1_1.selectById.bind(commentControllerV1_1)),
 );
 
@@ -36,6 +39,7 @@ commentRouter.post(
     "/:id/like",
     isAuthorized,
     validateRequestSchema,
+    isCommentNotExist(CommentServiceV1_1),
     tryCatch(commentControllerV1_1.setLike.bind(commentControllerV1_1)),
 );
 
@@ -45,6 +49,7 @@ commentRouter.patch(
     isAdminOrAccess,
     checkCommentOnUpdate,
     validateRequestSchema,
+    isCommentNotExist(CommentServiceV1_1),
     tryCatch(commentControllerV1_1.update.bind(commentControllerV1_1)),
 );
 
@@ -53,6 +58,7 @@ commentRouter.delete(
     isAuthorized,
     isAdminOrAccess,
     validateRequestSchema,
+    isCommentNotExist(CommentServiceV1_1),
     tryCatch(commentControllerV1_1.delete.bind(commentControllerV1_1)),
 );
 

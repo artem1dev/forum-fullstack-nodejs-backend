@@ -3,6 +3,8 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import postControllerV1_1 from "../../../posts/v1.1/post.controller.v1.1.js";
+import PostServiceV1_1 from "../../../posts/v1.1/post.service.v1.1.js";
+import { isPostNotExist } from "../../../posts/post.script.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkPostOnCreate, checkPostOnUpdate } from "../../../validations/post.validation.js";
 
@@ -21,6 +23,7 @@ postRouter.get(
 postRouter.get(
     "/:id",
     validateRequestSchema,
+    isPostNotExist(PostServiceV1_1),
     tryCatch(postControllerV1_1.selectById.bind(postControllerV1_1)),
 );
 
@@ -36,6 +39,7 @@ postRouter.post(
     "/:id/like",
     isAuthorized,
     validateRequestSchema,
+    isPostNotExist(PostServiceV1_1),
     tryCatch(postControllerV1_1.setLike.bind(postControllerV1_1)),
 );
 
@@ -45,6 +49,7 @@ postRouter.patch(
     isAdminOrAccess,
     checkPostOnUpdate,
     validateRequestSchema,
+    isPostNotExist(PostServiceV1_1),
     tryCatch(postControllerV1_1.update.bind(postControllerV1_1)),
 );
 
@@ -53,6 +58,7 @@ postRouter.delete(
     isAuthorized,
     isAdminOrAccess,
     validateRequestSchema,
+    isPostNotExist(PostServiceV1_1),
     tryCatch(postControllerV1_1.delete.bind(postControllerV1_1)),
 );
 
