@@ -1,37 +1,36 @@
 import { body } from "express-validator";
 
-
 const checkCommentOnCreate = [
     body("content")
         .exists({ checkFalsy: true })
-        .withMessage("Login must be provided")
+        .withMessage("Content must be provided")
         .isString()
-        .withMessage("Login must be a string"),
+        .withMessage("Content must be a string"),
     body("parentId")
         .exists({ checkFalsy: true })
         .withMessage("parentId must be provided")
-        .isString()
-        .withMessage("parentId must be a string"),
+        .isInt()
+        .withMessage("parentId must be a number"),
     body("postId")
         .exists({ checkFalsy: true })
         .withMessage("postId must be provided")
-        .isString()
-        .withMessage("postId must be a string"),
+        .isInt()
+        .withMessage("postId must be a number"),
 ];
 
 const checkCommentOnUpdate = [
     body("content")
         .optional()
         .isString()
-        .withMessage("Login must be a string"),
+        .withMessage("Content must be a string"),
     body("parentId")
         .optional()
-        .isString()
-        .withMessage("parentId must be a string"),
+        .isInt()
+        .withMessage("parentId must be a number"),
     body("postId")
         .optional()
-        .isString()
-        .withMessage("postId must be a string"),
+        .isInt()
+        .withMessage("postId must be a number"),
 ];
 
 export { checkCommentOnCreate, checkCommentOnUpdate };
