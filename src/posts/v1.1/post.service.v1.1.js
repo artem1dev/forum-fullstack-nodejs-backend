@@ -48,7 +48,7 @@ export default class PostServiceV1_1 {
     async create(data) {
         try {
             const newPost = new Post({
-                title: data.login,
+                title: data.title,
                 content: data.content,
                 status: data.status,
                 userId: data.userId

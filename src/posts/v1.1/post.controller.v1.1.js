@@ -48,7 +48,7 @@ export class PostControllerV1_1 {
         const { token } = req.headers;
         const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const data = {
-            title: body.login,
+            title: body.title,
             content: body.content,
             status: "active",
             userId: tokenData.userId

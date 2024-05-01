@@ -45,10 +45,12 @@ export class CommentControllerV1_1 {
     async create(req, res) {
         mongoSanitize.sanitize(req.body);
         const { body } = req;
+        const { token } = req.headers;
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const data = {
             content: body.content,
             parentId: body.parentId,
-            userId: body.userId,
+            userId: tokenData.userId,
             postId: body.postId
         };
         const result = await this.service.create(data);
