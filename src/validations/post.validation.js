@@ -11,11 +11,6 @@ const checkPostOnCreate = [
         .withMessage("Content must be provided")
         .isString()
         .withMessage("Content must be a string"),
-    body("userId")
-        .exists({ checkFalsy: true })
-        .withMessage("userId must be provided")
-        .isInt()
-        .withMessage("userId must be a number"),
 ];
 
 const checkPostOnUpdate = [
@@ -31,10 +26,6 @@ const checkPostOnUpdate = [
         .optional()
         .isString()
         .withMessage("Status must be a string"),
-    body("userId")
-        .optional()
-        .isInt()
-        .withMessage("userId must be a number"),
 ];
 
 export { checkPostOnCreate, checkPostOnUpdate };

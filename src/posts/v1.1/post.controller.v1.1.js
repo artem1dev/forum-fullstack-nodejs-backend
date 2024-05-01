@@ -45,11 +45,13 @@ export class PostControllerV1_1 {
     async create(req, res) {
         mongoSanitize.sanitize(req.body);
         const { body } = req;
+        const { token } = req.headers;
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const data = {
             title: body.login,
             content: body.content,
-            status: body.status,
-            userId: body.userId
+            status: "active",
+            userId: tokenData.userId
         };
         const result = await this.service.create(data);
         return { code: result.code, values: result.values };
