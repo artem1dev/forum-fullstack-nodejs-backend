@@ -11,9 +11,9 @@ export default class UserServiceV1_1 {
      */
     async selectAll() {
         try {
-            const user = await User.find({});
-            if (user) {
-                return { code: 200, values: user };
+            const users = await User.find({}, { password: 0 }).lean();
+            if (users) {
+                return { code: 200, values: users };
             }
             return { code: 404, values: { status: "users_not_found" } };
         } catch (error) {
@@ -29,7 +29,7 @@ export default class UserServiceV1_1 {
      */
     async selectById(id) {
         try {
-            const user = await User.findById(id);
+            const user = await User.findById(id, { password: 0 }).exec();
             if (user) {
                 return { code: 200, values: user };
             }
