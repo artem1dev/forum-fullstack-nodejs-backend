@@ -18,7 +18,7 @@ export default class UserServiceV1_2 {
                 return { code: 404, values: { status: "users_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting users: ${error.message}`);
+            logger.error(`Error selecting users: ${error}`);
             return { code: 500, values: `Error selecting users: ${error}` };
         }
     }
@@ -40,7 +40,7 @@ export default class UserServiceV1_2 {
               return { code: 404, values: { status: "user_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting user: ${error.message}`);
+            logger.error(`Error selecting user: ${error}`);
             return { code: 500, values: `Error selecting user: ${error}` };
         }
     }
@@ -60,7 +60,7 @@ export default class UserServiceV1_2 {
             await newUser.save();
             return { code: 200, values: "User created" };
         } catch (error) {
-            logger.error(`Error creating user: ${error.message}`);
+            logger.error(`Error creating user: ${error}`);
             return { code: 500, values: `Error creating user: ${error}` };
         }
     }
@@ -88,7 +88,7 @@ export default class UserServiceV1_2 {
                 return { code: 200, values: "No changes made" };
             }
         } catch (error) {
-            logger.error(`Error updating user: ${error.message}`);
+            logger.error(`Error updating user: ${error}`);
             return { code: 500, values: "Error updating user" };
         }
     }
@@ -106,7 +106,7 @@ export default class UserServiceV1_2 {
             }
             return { code: 404, values: { status: "users_not_found" } };
         } catch (error) {
-            logger.error(`Error deleting user: ${error.message}`);
+            logger.error(`Error deleting user: ${error}`);
             return { code: 500, values: `Error deleting user: ${error}` };
         }
     }
@@ -132,7 +132,7 @@ export default class UserServiceV1_2 {
                 return { code: 404, values: "No user found" };
             }
         } catch (error) {
-            logger.error(`Error fetching user by ${field}: ${error.message}`);
+            logger.error(`Error fetching user by ${field}: ${error}`);
             return { code: 500, values: `Error fetching user by ${field}: ${error}` };
         }
     }

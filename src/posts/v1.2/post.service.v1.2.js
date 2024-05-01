@@ -18,7 +18,7 @@ export default class PostServiceV1_2 {
                 return { code: 404, values: { status: "posts_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting posts: ${error.message}`);
+            logger.error(`Error selecting posts: ${error}`);
             return { code: 500, values: `Error selecting posts: ${error}` };
         }
     }
@@ -40,7 +40,7 @@ export default class PostServiceV1_2 {
               return { code: 404, values: { status: "post_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting post: ${error.message}`);
+            logger.error(`Error selecting post: ${error}`);
             return { code: 500, values: `Error selecting post: ${error}` };
         }
     }
@@ -61,7 +61,7 @@ export default class PostServiceV1_2 {
             await newPost.save();
             return { code: 200, values: "Post created" };
         } catch (error) {
-            logger.error(`Error creating post: ${error.message}`);
+            logger.error(`Error creating post: ${error}`);
             return { code: 500, values: `Error creating post: ${error}` };
         }
     }
@@ -89,7 +89,7 @@ export default class PostServiceV1_2 {
                 return { code: 200, values: "No changes made" };
             }
         } catch (error) {
-            logger.error(`Error updating post: ${error.message}`);
+            logger.error(`Error updating post: ${error}`);
             return { code: 500, values: "Error updating post" };
         }
     }
@@ -107,7 +107,7 @@ export default class PostServiceV1_2 {
             }
             return { code: 404, values: { status: "posts_not_found" } };
         } catch (error) {
-            logger.error(`Error deleting post: ${error.message}`);
+            logger.error(`Error deleting post: ${error}`);
             return { code: 500, values: `Error deleting post: ${error}` };
         }
     }
@@ -133,7 +133,7 @@ export default class PostServiceV1_2 {
                 return { code: 404, values: "No post found" };
             }
         } catch (error) {
-            logger.error(`Error fetching post by ${field}: ${error.message}`);
+            logger.error(`Error fetching post by ${field}: ${error}`);
             return { code: 500, values: `Error fetching post by ${field}: ${error}` };
         }
     }

@@ -17,7 +17,7 @@ export default class CommentServiceV1_1 {
             }
             return { code: 404, values: { status: "comments_not_found" } };
         } catch (error) {
-            logger.error(`Error selecting comments: ${error.message}`);
+            logger.error(`Error selecting comments: ${error}`);
             return { code: 500, values: `Error selecting comments: ${error}` };
         }
     }
@@ -35,7 +35,7 @@ export default class CommentServiceV1_1 {
             }
             return { code: 404, values: { status: "comment_not_found" } };
         } catch (error) {
-            logger.error(`Error selecting comment: ${error.message}`);
+            logger.error(`Error selecting comment: ${error}`);
             return { code: 500, values: `Error selecting comment: ${error}` };
         }
     }
@@ -56,7 +56,7 @@ export default class CommentServiceV1_1 {
             await newComment.save();
             return { code: 200, values: "Comment created" };
         } catch (error) {
-            logger.error(`Error creating comment: ${error.message}`);
+            logger.error(`Error creating comment: ${error}`);
             return { code: 500, values: `Error creating comment: ${error}` };
         }
     }
@@ -75,7 +75,7 @@ export default class CommentServiceV1_1 {
             }
             return { code: 404, values: { status: "comment_not_found" } };
         } catch (error) {
-            logger.error(`Error updating comment: ${error.message}`);
+            logger.error(`Error updating comment: ${error}`);
             return { code: 500, values: "Error updating comment" };
         }
     }
@@ -93,7 +93,7 @@ export default class CommentServiceV1_1 {
             }
             return { code: 404, values: { status: "comments_not_found" } };
         } catch (error) {
-            logger.error(`Error deleting comments: ${error.message}`);
+            logger.error(`Error deleting comments: ${error}`);
             return { code: 500, values: `Error deleting comments: ${error}` };
         }
     }
@@ -115,7 +115,7 @@ export default class CommentServiceV1_1 {
                 return comment;
             }
         } catch (error) {
-            logger.error(`Error fetching comment by ${field}: ${error.message}`);
+            logger.error(`Error fetching comment by ${field}: ${error}`);
             return { code: 500, values: `Error fetching comment by ${field}` };
         }
     }

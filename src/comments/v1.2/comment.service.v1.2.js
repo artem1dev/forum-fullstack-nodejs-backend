@@ -1,6 +1,6 @@
 import logger from "../../config/logger.js";
 import Comment from "../comment.model.js";
-
+import LikeComment from "../likecomment.model.js";
 /**
  * Service class for managing comment-related operations.
  */
@@ -18,7 +18,7 @@ export default class CommentServiceV1_2 {
                 return { code: 404, values: { status: "comments_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting comments: ${error.message}`);
+            logger.error(`Error selecting comments: ${error}`);
             return { code: 500, values: `Error selecting comments: ${error}` };
         }
     }
@@ -40,7 +40,7 @@ export default class CommentServiceV1_2 {
               return { code: 404, values: { status: "comment_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting comment: ${error.message}`);
+            logger.error(`Error selecting comment: ${error}`);
             return { code: 500, values: `Error selecting comment: ${error}` };
         }
     }
@@ -61,8 +61,47 @@ export default class CommentServiceV1_2 {
             await newComment.save();
             return { code: 200, values: "Comment created" };
         } catch (error) {
-            logger.error(`Error creating comment: ${error.message}`);
+            logger.error(`Error creating comment: ${error}`);
             return { code: 500, values: `Error creating comment: ${error}` };
+        }
+    }
+
+    /**
+     * Delete a post by id
+     * @param {string} id - The post's id
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async setLike(data) {
+        try {
+            const comment = await Comment.findOne({
+                where: {
+                    commentId: data.commentId,
+                    userId: data.userId
+                },
+            });
+            if (comment) {
+                if(comment.like == data.like) {
+                    const result = await LikeComment.findByIdAndDelete(comment.id);
+                    if (result) {
+                        return { code: 200, values: "Like on comment deleted successfully" };
+                    }
+                }
+                const newLikeComment = await LikeComment.findByIdAndUpdate(comment.id, { $set: { like: comment.like ? false : true } }, { new: true });
+                if (newLikeComment) {
+                    return { code: 200, values: "Like on comment updated" };
+                }
+            } else {
+                const newLikeComment = new LikeComment({
+                    like: data.like,
+                    userId: data.userId,
+                    commentId: data.commentId
+                });
+                await newLikeComment.save();
+                return { code: 200, values: "Like on comment created" };
+            }
+        } catch (error) {
+            logger.error(`Error setting like: ${error}`);
+            return { code: 500, values: `Error setting like: ${error}` };
         }
     }
 
@@ -80,7 +119,7 @@ export default class CommentServiceV1_2 {
             }
             return { code: 404, values: { status: "comment_not_found" } };
         } catch (error) {
-            logger.error(`Error updating comment: ${error.message}`);
+            logger.error(`Error updating comment: ${error}`);
             return { code: 500, values: "Error updating comment" };
         }
     }
@@ -98,7 +137,7 @@ export default class CommentServiceV1_2 {
             }
             return { code: 404, values: { status: "comments_not_found" } };
         } catch (error) {
-            logger.error(`Error deleting comments: ${error.message}`);
+            logger.error(`Error deleting comments: ${error}`);
             return { code: 500, values: `Error deleting comments: ${error}` };
         }
     }
@@ -124,7 +163,7 @@ export default class CommentServiceV1_2 {
                 return { code: 404, values: "No comment found" };
             }
         } catch (error) {
-            logger.error(`Error fetching comment by ${field}: ${error.message}`);
+            logger.error(`Error fetching comment by ${field}: ${error}`);
             return { code: 500, values: `Error fetching comment by ${field}: ${error}` };
         }
     }

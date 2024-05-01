@@ -57,12 +57,4 @@ commentRouter.delete(
     tryCatch(commentControllerV1_1.delete.bind(commentControllerV1_1)),
 );
 
-commentRouter.delete(
-    "/:id/like",
-    isAuthorized,
-    //isAdmin,
-    validateRequestSchema,
-    tryCatch(commentControllerV1_1.deleteLike.bind(commentControllerV1_1)),
-);
-
 export default commentRouter;

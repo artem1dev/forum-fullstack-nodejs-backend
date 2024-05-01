@@ -60,13 +60,4 @@ postRouter.delete(
     tryCatch(postControllerV1_1.delete.bind(postControllerV1_1)),
 );
 
-postRouter.delete(
-    "/:id/like",
-    isAuthorized,
-    //isAdmin,
-    //checkUserOnCreate,
-    validateRequestSchema,
-    tryCatch(postControllerV1_1.deleteLike.bind(postControllerV1_1)),
-);
-
 export default postRouter;
