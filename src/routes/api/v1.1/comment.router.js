@@ -27,7 +27,7 @@ commentRouter.get(
 commentRouter.post(
     "/",
     isAuthorized,
-    //checkUserOnCreate,
+    checkCommentOnCreate,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.create.bind(commentControllerV1_1)),
 );
@@ -36,7 +36,6 @@ commentRouter.post(
     "/:id/like",
     isAuthorized,
     //isAdmin,
-    //checkUserOnCreate,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.setLike.bind(commentControllerV1_1)),
 );
@@ -45,7 +44,7 @@ commentRouter.patch(
     "/:id",
     isAuthorized,
     //isAdmin,
-    //checkUserOnUpdate,
+    checkCommentOnUpdate,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.update.bind(commentControllerV1_1)),
 );
@@ -62,7 +61,6 @@ commentRouter.delete(
     "/:id/like",
     isAuthorized,
     //isAdmin,
-    //checkUserOnCreate,
     validateRequestSchema,
     tryCatch(commentControllerV1_1.deleteLike.bind(commentControllerV1_1)),
 );

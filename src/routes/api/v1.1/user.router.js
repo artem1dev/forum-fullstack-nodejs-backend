@@ -29,7 +29,7 @@ userRouter.post(
     "/",
     isAuthorized,
     //isAdmin,
-    //checkUserOnCreate,
+    checkUserOnCreate,
     validateRequestSchema,
     tryCatch(userControllerV1_1.create.bind(userControllerV1_1)),
 );
@@ -38,7 +38,7 @@ userRouter.patch(
     "/:id",
     isAuthorized,
     //isAdmin,
-    //checkUserOnUpdate,
+    checkUserOnUpdate,
     validateRequestSchema,
     tryCatch(userControllerV1_1.update.bind(userControllerV1_1)),
 );

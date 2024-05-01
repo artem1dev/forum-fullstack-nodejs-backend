@@ -3,7 +3,7 @@ import morgan from "morgan";
 import "dotenv/config";
 
 import commentControllerV1_2 from "../../../comments/v1.2/comment.controller.v1.2.js";
-import { validateRequestSchema, tryCatch } from "../../../middlewares/index.js";
+import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
 import { checkCommentOnCreate, checkCommentOnUpdate } from "../../../validations/comment.validation.js";
 
 const commentRouter = Router();
@@ -27,7 +27,7 @@ commentRouter.get(
 
 commentRouter.post(
     "/",
-    //checkUserOnCreate,
+    checkCommentOnCreate,
     validateRequestSchema,
     tryCatch(commentControllerV1_2.create.bind(commentControllerV1_2)),
 );
@@ -35,7 +35,7 @@ commentRouter.post(
 commentRouter.patch(
     "/:id",
     //isAdmin,
-    //checkUserOnUpdate,
+    checkCommentOnUpdate,
     validateRequestSchema,
     tryCatch(commentControllerV1_2.update.bind(commentControllerV1_2)),
 );

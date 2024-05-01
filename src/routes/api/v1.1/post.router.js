@@ -29,7 +29,7 @@ postRouter.post(
     "/",
     isAuthorized,
     //isAdmin,
-    //checkUserOnCreate,
+    checkPostOnCreate,
     validateRequestSchema,
     tryCatch(postControllerV1_1.create.bind(postControllerV1_1)),
 );
@@ -47,7 +47,7 @@ postRouter.patch(
     "/:id",
     isAuthorized,
     //isAdmin,
-    //checkUserOnUpdate,
+    checkPostOnUpdate,
     validateRequestSchema,
     tryCatch(postControllerV1_1.update.bind(postControllerV1_1)),
 );
