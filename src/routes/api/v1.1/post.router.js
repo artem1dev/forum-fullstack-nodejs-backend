@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import postControllerV1_1 from "../../../posts/v1.1/post.controller.v1.1.js";
 import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
-//import { checkUserOnCreate, checkUserOnUpdate } from "../../validations/post.validation.js";
+import { checkPostOnCreate, checkPostOnUpdate } from "../../../validations/post.validation.js";
 
 const postRouter = Router();
 

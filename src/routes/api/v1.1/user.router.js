@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import userControllerV1_1 from "../../../users/v1.1/user.controller.v1.1.js";
 import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
-//import { checkUserOnCreate, checkUserOnUpdate } from "../../validations/user.validation.js";
+import { checkUserOnCreate, checkUserOnUpdate } from "../../../validations/user.validation.js";
 
 const userRouter = Router();
 

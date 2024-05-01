@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import commentControllerV1_1 from "../../../comments/v1.1/comment.controller.v1.1.js";
 import { validateRequestSchema, tryCatch, isAdmin, isAuthorized } from "../../../middlewares/index.js";
-//import { checkUserOnCreate, checkUserOnUpdate } from "../../validations/user.validation.js";
+import { checkCommentOnCreate, checkCommentOnUpdate } from "../../../validations/comment.validation.js";
 
 const commentRouter = Router();
 
