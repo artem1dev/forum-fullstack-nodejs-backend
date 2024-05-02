@@ -6,7 +6,7 @@ import commentControllerV1_1 from "../../../comments/v1.1/comment.controller.v1.
 import CommentServiceV1_1 from "../../../comments/v1.1/comment.service.v1.1.js";
 import { isCommentNotExist } from "../../../comments/comment.script.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
-import { checkCommentOnCreate, checkCommentOnUpdate } from "../../../validations/comment.validation.js";
+import { checkCommentOnCreate, checkCommentOnUpdate, checkLikeOnCommentOnCreate } from "../../../validations/comment.validation.js";
 
 const commentRouter = Router();
 
@@ -38,6 +38,7 @@ commentRouter.post(
 commentRouter.post(
     "/:id/like",
     isAuthorized,
+    checkLikeOnCommentOnCreate,
     validateRequestSchema,
     isCommentNotExist(CommentServiceV1_1),
     tryCatch(commentControllerV1_1.setLike.bind(commentControllerV1_1)),

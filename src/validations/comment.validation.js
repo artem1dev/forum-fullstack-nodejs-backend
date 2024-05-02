@@ -33,4 +33,12 @@ const checkCommentOnUpdate = [
         .withMessage("postId must be a number"),
 ];
 
-export { checkCommentOnCreate, checkCommentOnUpdate };
+const checkLikeOnCommentOnCreate= [
+    body("like")
+        .exists({ checkFalsy: true })
+        .withMessage("like must be provided")
+        .isBoolean()
+        .withMessage("like must be a boolean"),
+];
+
+export { checkCommentOnCreate, checkCommentOnUpdate, checkLikeOnCommentOnCreate };

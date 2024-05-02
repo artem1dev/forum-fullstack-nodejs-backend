@@ -28,4 +28,12 @@ const checkPostOnUpdate = [
         .withMessage("Status must be a string"),
 ];
 
-export { checkPostOnCreate, checkPostOnUpdate };
+const checkLikeOnPostOnCreate= [
+    body("like")
+        .exists({ checkFalsy: true })
+        .withMessage("like must be provided")
+        .isBoolean()
+        .withMessage("like must be a boolean"),
+];
+
+export { checkPostOnCreate, checkPostOnUpdate, checkLikeOnPostOnCreate };

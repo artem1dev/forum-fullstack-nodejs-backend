@@ -6,7 +6,7 @@ import postControllerV1_1 from "../../../posts/v1.1/post.controller.v1.1.js";
 import PostServiceV1_1 from "../../../posts/v1.1/post.service.v1.1.js";
 import { isPostNotExist } from "../../../posts/post.script.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
-import { checkPostOnCreate, checkPostOnUpdate } from "../../../validations/post.validation.js";
+import { checkPostOnCreate, checkPostOnUpdate, checkLikeOnPostOnCreate } from "../../../validations/post.validation.js";
 
 const postRouter = Router();
 
@@ -38,6 +38,7 @@ postRouter.post(
 postRouter.post(
     "/:id/like",
     isAuthorized,
+    checkLikeOnPostOnCreate,
     validateRequestSchema,
     isPostNotExist(PostServiceV1_1),
     tryCatch(postControllerV1_1.setLike.bind(postControllerV1_1)),
