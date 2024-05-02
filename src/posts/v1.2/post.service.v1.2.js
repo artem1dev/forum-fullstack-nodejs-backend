@@ -1,5 +1,9 @@
 import logger from "../../config/logger.js";
+import User from "../../users/user.model.js";
 import Post from "../post.model.js";
+import LikePost from "../likepost.model.js";
+import Comment from "../../comments/comment.model.js";
+import LikeComment from "../../comments/likecomment.model.js";
 
 /**
  * Service class for managing post-related operations.
@@ -63,6 +67,45 @@ export default class PostServiceV1_2 {
         } catch (error) {
             logger.error(`Error creating post: ${error}`);
             return { code: 500, values: `Error creating post: ${error}` };
+        }
+    }
+
+    /**
+     * Delete a post by id
+     * @param {string} id - The post's id
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async setLike(data) {
+        try {
+            const post = await LikePost.findOne({
+                where: {
+                    postId: data.postId,
+                    userId: data.userId
+                },
+            });
+            if (post) {
+                if(post.like == data.like) {
+                    const result = await LikePost.findByIdAndDelete(post.id);
+                    if (result) {
+                        return { code: 200, values: "Like on post deleted successfully" };
+                    }
+                }
+                const newLikePost = await LikePost.findByIdAndUpdate(post.id, { $set: { like: post.like ? false : true } }, { new: true });
+                if (newLikePost) {
+                    return { code: 200, values: "Like on post updated" };
+                }
+            } else {
+                const newLikePost = new LikePost({
+                    like: data.like,
+                    userId: data.userId,
+                    postId: data.postId
+                });
+                await newLikePost.save();
+                return { code: 200, values: "Like on post created" };
+            }
+        } catch (error) {
+            logger.error(`Error setting like: ${error}`);
+            return { code: 500, values: `Error setting like: ${error}` };
         }
     }
 

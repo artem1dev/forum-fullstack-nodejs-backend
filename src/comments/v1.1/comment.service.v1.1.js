@@ -148,9 +148,7 @@ export default class CommentServiceV1_1 {
         try {
             const whereClause = {};
             whereClause[field] = value;
-            const comment = await Comment.findOne({
-                where: whereClause,
-            });
+            const comment = await Comment.findOne(whereClause);
             if (comment) {
                 return comment;
             }

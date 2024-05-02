@@ -32,7 +32,7 @@ export const isUserWithLoginNotExist = (Service) => async (req, res, next) => {
  * @returns {Function} Middleware function.
  */
 export const isUserNotExist = (Service) => async (req, res, next) => {
-    const isId = await isExist(Service, "id", req.params.id);
+    const isId = await isExist(Service, "_id", req.params.id);
     if (!isId) {
         return response(409, { message: "User with this id doesn't exists" }, res);
     }

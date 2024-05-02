@@ -27,6 +27,12 @@ postRouter.get(
     tryCatch(postControllerV1_1.selectById.bind(postControllerV1_1)),
 );
 
+postRouter.get(
+    "/user/:id",
+    validateRequestSchema,
+    tryCatch(postControllerV1_1.selectByUserId.bind(postControllerV1_1)),
+);
+
 postRouter.post(
     "/",
     isAuthorized,

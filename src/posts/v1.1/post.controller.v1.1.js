@@ -37,6 +37,18 @@ export class PostControllerV1_1 {
     }
 
     /**
+     * Retrieves a post by user ID.
+     * @param {import("express").Request} req The Express request object.
+     * @param {import("express").Response} res The Express response object.
+     * @returns {Promise<{code: number, values: any}>} The result of the operation.
+     */
+    async selectByUserId(req, res) {
+        const { id } = req.params;
+        const result = await this.service.selectByUserId(id);
+        return { code: result.code, values: result.values };
+    }
+
+    /**
      * Creates a new post.
      * @param {import("express").Request} req The Express request object.
      * @param {import("express").Response} res The Express response object.

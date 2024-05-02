@@ -6,7 +6,7 @@ import { response, isExist } from "../middlewares/index.js";
  * @returns {Function} Middleware function.
  */
 export const isCommentNotExist = (Service) => async (req, res, next) => {
-    const isId = await isExist(Service, "id", req.params.id);
+    const isId = await isExist(Service, "_id", req.params.id);
     if (!isId) {
         return response(409, { message: "Comment with this id doesn't exists" }, res);
     }

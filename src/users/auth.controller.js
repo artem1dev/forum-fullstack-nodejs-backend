@@ -43,7 +43,7 @@ export class AuthController {
         const { body } = req;
         const userResponse = await this.service.selectByLogin(body.login);
         if (userResponse.code != 200) {
-            return { code: user.code, values: user.values };
+            return { code: userResponse.code, values: userResponse.values };
         }
         const user = userResponse.values;
         const password = await hashPassword(body.password);

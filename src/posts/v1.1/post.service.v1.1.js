@@ -108,6 +108,44 @@ export default class PostServiceV1_1 {
     }
 
     /**
+     * Retrieves all posts by userId
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async selectByUserId(userId) {
+        try {
+            const posts = await Post.find({userId: userId});
+            if (posts) {
+                for (const post of posts) {
+                    const user = await User.findById(post.userId);
+                    const likes = await LikePost.find({ postId: post.id });
+                    const comments = await Comment.find({ postId: post.id });
+                    const counts = {
+                        true: 0,
+                        false: 0
+                    };
+                    likes.forEach(item => {
+                        if(item.like == true) {
+                            counts.true += 1;
+                        } else {
+                            counts.false += 1;
+                        }
+                    });
+                    post.authorLogin = user.login;
+                    post.profilePic = user.profilePic;
+                    post.likeCount = counts.true;
+                    post.dislikeCount = counts.false;
+                    post.commentsCount = comments.length;
+                }
+                return { code: 200, values: posts };
+            }
+            return { code: 404, values: { status: "posts_not_found" } };
+        } catch (error) {
+            logger.error(`Error selecting posts: ${error}`);
+            return { code: 500, values: `Error selecting posts: ${error}` };
+        }
+    }
+
+    /**
      * Creates a new post
      * @param {Object} data - Data for creating the post
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
@@ -214,9 +252,7 @@ export default class PostServiceV1_1 {
         try {
             const whereClause = {};
             whereClause[field] = value;
-            const post = await Post.findOne({
-                where: whereClause,
-            });
+            const post = await Post.findOne(whereClause);
             if (post) {
                 return post;
             }

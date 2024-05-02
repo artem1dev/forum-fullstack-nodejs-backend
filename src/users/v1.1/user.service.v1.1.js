@@ -125,9 +125,7 @@ export default class UserServiceV1_1 {
         try {
             const whereClause = {};
             whereClause[field] = value;
-            const user = await User.findOne({
-                where: whereClause,
-            });
+            const user = await User.findOne(whereClause);
             if (user) {
                 return user;
             }

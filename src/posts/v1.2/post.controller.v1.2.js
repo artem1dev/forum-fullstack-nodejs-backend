@@ -45,13 +45,36 @@ export class PostControllerV1_2 {
     async create(req, res) {
         mongoSanitize.sanitize(req.body);
         const { body } = req;
+        const { token } = req.headers;
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
         const data = {
-            title: body.login,
+            title: body.title,
             content: body.content,
-            status: body.status,
-            userId: body.userId
+            status: "active",
+            userId: tokenData.userId
         };
         const result = await this.service.create(data);
+        return { code: result.code, values: result.values };
+    }
+
+    /**
+     * Set like on post.
+     * @param {import("express").Request} req The Express request object.
+     * @param {import("express").Response} res The Express response object.
+     * @returns {Promise<{code: number, values: any}>} The result of the operation.
+     */
+    async setLike(req, res) {
+        mongoSanitize.sanitize(req.body);
+        const { body } = req;
+        const { id } = req.params;
+        const { token } = req.headers;
+        const tokenData = jwt.verify(token, process.env.JWT_SECRET);
+        const data = {
+            like: body.like,
+            postId: id,
+            userId: tokenData.userId
+        };
+        const result = await this.service.setLike(data);
         return { code: result.code, values: result.values };
     }
 
