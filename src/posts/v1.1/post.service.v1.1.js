@@ -14,10 +14,10 @@ export default class PostServiceV1_1 {
      */
     async selectAll() {
         try {
-            const posts = await Post.find({});
-            if (posts) {
+            const posts = await Post.find().lean();
+            if (posts.length > 0) {
                 for (const post of posts) {
-                    const user = await User.findById(post.userId);
+                    const user = await User.findById(post.userId.toString());
                     const likes = await LikePost.find({ postId: post.id });
                     const comments = await Comment.find({ postId: post.id });
                     const counts = {
@@ -113,8 +113,8 @@ export default class PostServiceV1_1 {
      */
     async selectByUserId(userId) {
         try {
-            const posts = await Post.find({userId: userId});
-            if (posts) {
+            const posts = await Post.find({userId: userId}).lean();
+            if (posts.length > 0) {
                 for (const post of posts) {
                     const user = await User.findById(post.userId);
                     const likes = await LikePost.find({ postId: post.id });
