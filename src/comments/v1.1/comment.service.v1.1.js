@@ -1,5 +1,6 @@
 import logger from "../../config/logger.js";
 import Comment from "../comment.model.js";
+import LikeComment from "../likecomment.model.js";
 
 /**
  * Service class for managing comment-related operations.
@@ -58,6 +59,45 @@ export default class CommentServiceV1_1 {
         } catch (error) {
             logger.error(`Error creating comment: ${error}`);
             return { code: 500, values: `Error creating comment: ${error}` };
+        }
+    }
+
+    /**
+     * Delete a post by id
+     * @param {string} id - The post's id
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async setLike(data) {
+        try {
+            const comment = await LikeComment.findOne({
+                where: {
+                    commentId: data.commentId,
+                    userId: data.userId
+                },
+            });
+            if (comment) {
+                if(comment.like == data.like) {
+                    const result = await LikeComment.findByIdAndDelete(comment.id);
+                    if (result) {
+                        return { code: 200, values: "Like on comment deleted successfully" };
+                    }
+                }
+                const newLikeComment = await LikeComment.findByIdAndUpdate(comment.id, { $set: { like: comment.like ? false : true } }, { new: true });
+                if (newLikeComment) {
+                    return { code: 200, values: "Like on comment updated" };
+                }
+            } else {
+                const newLikeComment = new LikeComment({
+                    like: data.like,
+                    userId: data.userId,
+                    commentId: data.commentId
+                });
+                await newLikeComment.save();
+                return { code: 200, values: "Like on comment created" };
+            }
+        } catch (error) {
+            logger.error(`Error setting like: ${error}`);
+            return { code: 500, values: `Error setting like: ${error}` };
         }
     }
 

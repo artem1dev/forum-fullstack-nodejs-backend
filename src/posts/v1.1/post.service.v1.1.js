@@ -1,6 +1,9 @@
 import logger from "../../config/logger.js";
+import User from "../../users/user.model.js";
 import Post from "../post.model.js";
 import LikePost from "../likepost.model.js";
+import Comment from "../../comments/comment.model.js";
+import LikeComment from "../../comments/likecomment.model.js";
 /**
  * Service class for managing post-related operations.
  */
@@ -11,9 +14,30 @@ export default class PostServiceV1_1 {
      */
     async selectAll() {
         try {
-            const post = await Post.find({});
-            if (post) {
-                return { code: 200, values: post };
+            const posts = await Post.find({});
+            if (posts) {
+                for (const post of posts) {
+                    const user = await User.findById(post.userId);
+                    const likes = await LikePost.find({ postId: post.id });
+                    const comments = await Comment.find({ postId: post.id });
+                    const counts = {
+                        true: 0,
+                        false: 0
+                    };
+                    likes.forEach(item => {
+                        if(item.like == true) {
+                            counts.true += 1;
+                        } else {
+                            counts.false += 1;
+                        }
+                    });
+                    post.authorLogin = user.login;
+                    post.profilePic = user.profilePic;
+                    post.likeCount = counts.true;
+                    post.dislikeCount = counts.false;
+                    post.commentsCount = comments.length;
+                }
+                return { code: 200, values: posts };
             }
             return { code: 404, values: { status: "posts_not_found" } };
         } catch (error) {
@@ -31,7 +55,50 @@ export default class PostServiceV1_1 {
         try {
             const post = await Post.findById(id);
             if (post) {
-                return { code: 200, values: post };
+                const user = await User.findById(post.userId);
+                const likes = await LikePost.find({ postId: id });
+                const counts = {
+                    true: 0,
+                    false: 0
+                };
+                likes.forEach(item => {
+                    if(item.like == true) {
+                        counts.true += 1;
+                    } else {
+                        counts.false += 1;
+                    }
+                });
+                const comments = await Comment.find({ postId: id });
+                for (const comment of comments) {
+                    const likesComment = await LikeComment.find({ commentId: comment.id });
+                    const commentCounts = {
+                        true: 0,
+                        false: 0
+                    };
+                    likesComment.forEach(item => {
+                        if(item.like == true) {
+                            commentCounts.true += 1;
+                        } else {
+                            commentCounts.false += 1;
+                        }
+                    });
+                    comment.likeCounts = commentCounts.true;
+                    comment.dislikeCounts = commentCounts.false;
+                }
+                const data = {
+                    id: post.id,
+                    title: post.title,
+                    content: post.content,
+                    status: post.status,
+                    userId: post.userId,
+                    authorLogin: user.login,
+                    profilePic: user.profilePic,
+                    likeCount: counts.true,
+                    dislikeCount: counts.false,
+                    commentsCount: comments.length,
+                    comments: comments,
+                };
+                return { code: 200, values: data };
             }
             return { code: 404, values: { status: "post_not_found" } };
         } catch (error) {
@@ -68,7 +135,7 @@ export default class PostServiceV1_1 {
      */
     async setLike(data) {
         try {
-            const post = await Post.findOne({
+            const post = await LikePost.findOne({
                 where: {
                     postId: data.postId,
                     userId: data.userId
