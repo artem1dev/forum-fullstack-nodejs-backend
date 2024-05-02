@@ -19,11 +19,7 @@ postRouter.get(
     tryCatch(postControllerV1_2.selectAll.bind(postControllerV1_2)),
 );
 
-postRouter.get(
-    "/:id",
-    validateRequestSchema,
-    tryCatch(postControllerV1_2.selectById.bind(postControllerV1_2)),
-);
+postRouter.get("/:id", validateRequestSchema, tryCatch(postControllerV1_2.selectById.bind(postControllerV1_2)));
 
 postRouter.post(
     "/",

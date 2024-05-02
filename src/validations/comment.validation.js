@@ -19,21 +19,12 @@ const checkCommentOnCreate = [
 ];
 
 const checkCommentOnUpdate = [
-    body("content")
-        .optional()
-        .isString()
-        .withMessage("Content must be a string"),
-    body("parentId")
-        .optional()
-        .isInt()
-        .withMessage("parentId must be a number"),
-    body("postId")
-        .optional()
-        .isInt()
-        .withMessage("postId must be a number"),
+    body("content").optional().isString().withMessage("Content must be a string"),
+    body("parentId").optional().isInt().withMessage("parentId must be a number"),
+    body("postId").optional().isInt().withMessage("postId must be a number"),
 ];
 
-const checkLikeOnCommentOnCreate= [
+const checkLikeOnCommentOnCreate = [
     body("like")
         .exists({ checkFalsy: true })
         .withMessage("like must be provided")

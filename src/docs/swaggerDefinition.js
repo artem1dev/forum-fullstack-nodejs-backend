@@ -28,7 +28,7 @@ const swaggerDefinition = {
         {
             name: "Comment",
             description: "Endpoints related to product categories.",
-        }
+        },
     ],
 };
 

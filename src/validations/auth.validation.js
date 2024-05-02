@@ -49,4 +49,3 @@ export const loginValidateChainMethod = [
         .isString()
         .withMessage("Password must be a string"),
 ];
-

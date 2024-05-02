@@ -22,10 +22,10 @@ export default class PostServiceV1_1 {
                     const comments = await Comment.find({ postId: post.id });
                     const counts = {
                         true: 0,
-                        false: 0
+                        false: 0,
                     };
-                    likes.forEach(item => {
-                        if(item.like == true) {
+                    likes.forEach((item) => {
+                        if (item.like == true) {
                             counts.true += 1;
                         } else {
                             counts.false += 1;
@@ -59,10 +59,10 @@ export default class PostServiceV1_1 {
                 const likes = await LikePost.find({ postId: id });
                 const counts = {
                     true: 0,
-                    false: 0
+                    false: 0,
                 };
-                likes.forEach(item => {
-                    if(item.like == true) {
+                likes.forEach((item) => {
+                    if (item.like == true) {
                         counts.true += 1;
                     } else {
                         counts.false += 1;
@@ -73,10 +73,10 @@ export default class PostServiceV1_1 {
                     const likesComment = await LikeComment.find({ commentId: comment.id });
                     const commentCounts = {
                         true: 0,
-                        false: 0
+                        false: 0,
                     };
-                    likesComment.forEach(item => {
-                        if(item.like == true) {
+                    likesComment.forEach((item) => {
+                        if (item.like == true) {
                             commentCounts.true += 1;
                         } else {
                             commentCounts.false += 1;
@@ -113,7 +113,7 @@ export default class PostServiceV1_1 {
      */
     async selectByUserId(userId) {
         try {
-            const posts = await Post.find({userId: userId}).lean();
+            const posts = await Post.find({ userId: userId }).lean();
             if (posts.length > 0) {
                 for (const post of posts) {
                     const user = await User.findById(post.userId);
@@ -121,10 +121,10 @@ export default class PostServiceV1_1 {
                     const comments = await Comment.find({ postId: post.id });
                     const counts = {
                         true: 0,
-                        false: 0
+                        false: 0,
                     };
-                    likes.forEach(item => {
-                        if(item.like == true) {
+                    likes.forEach((item) => {
+                        if (item.like == true) {
                             counts.true += 1;
                         } else {
                             counts.false += 1;
@@ -156,7 +156,7 @@ export default class PostServiceV1_1 {
                 title: data.title,
                 content: data.content,
                 status: data.status,
-                userId: data.userId
+                userId: data.userId,
             });
             await newPost.save();
             return { code: 200, values: "Post created" };
@@ -176,17 +176,21 @@ export default class PostServiceV1_1 {
             const post = await LikePost.findOne({
                 where: {
                     postId: data.postId,
-                    userId: data.userId
+                    userId: data.userId,
                 },
             });
             if (post) {
-                if(post.like == data.like) {
+                if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {
                         return { code: 200, values: "Like on post deleted successfully" };
                     }
                 }
-                const newLikePost = await LikePost.findByIdAndUpdate(post.id, { $set: { like: post.like ? false : true } }, { new: true });
+                const newLikePost = await LikePost.findByIdAndUpdate(
+                    post.id,
+                    { $set: { like: post.like ? false : true } },
+                    { new: true },
+                );
                 if (newLikePost) {
                     return { code: 200, values: "Like on post updated" };
                 }
@@ -194,7 +198,7 @@ export default class PostServiceV1_1 {
                 const newLikePost = new LikePost({
                     like: data.like,
                     userId: data.userId,
-                    postId: data.postId
+                    postId: data.postId,
                 });
                 await newLikePost.save();
                 return { code: 200, values: "Like on post created" };

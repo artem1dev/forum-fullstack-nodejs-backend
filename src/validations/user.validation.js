@@ -28,10 +28,7 @@ const checkUserOnCreate = [
 ];
 
 const checkUserOnUpdate = [
-    body("login")
-        .optional()
-        .isString()
-        .withMessage("Login must be a string"),
+    body("login").optional().isString().withMessage("Login must be a string"),
     body("password")
         .optional()
         .isString()

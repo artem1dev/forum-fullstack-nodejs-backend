@@ -26,5 +26,4 @@ async function disconnectFromDB() {
     logger.info("Disconnected from MongoDB");
 }
 
-
 export { connectToDB, disconnectFromDB };

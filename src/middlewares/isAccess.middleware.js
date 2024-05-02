@@ -33,7 +33,7 @@ export const isAdminOrAccess = (req, res, next) => {
 
     const userData = jwt.verify(token, process.env.JWT_SECRET);
     if (userData.role !== "admin") {
-        if(body.userId == userData.userId || id == userData.userId){
+        if (body.userId == userData.userId || id == userData.userId) {
             next();
         }
         return response(403, { message: "Access denied" }, res);

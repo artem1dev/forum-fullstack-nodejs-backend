@@ -31,14 +31,12 @@ export default class CommentServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await Comment.aggregate([
-              { $match: { _id: mongoose.Types.ObjectId(id) } },
-            ]);
-        
+            const result = await Comment.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
+
             if (result.length > 0) {
-              return { code: 200, values: result[0] };
+                return { code: 200, values: result[0] };
             } else {
-              return { code: 404, values: { status: "comment_not_found" } };
+                return { code: 404, values: { status: "comment_not_found" } };
             }
         } catch (error) {
             logger.error(`Error selecting comment: ${error}`);
@@ -57,7 +55,7 @@ export default class CommentServiceV1_2 {
                 content: data.content,
                 parentId: data.parentId,
                 userId: data.userId,
-                postId: data.postId
+                postId: data.postId,
             });
             await newComment.save();
             return { code: 200, values: "Comment created" };
@@ -77,17 +75,21 @@ export default class CommentServiceV1_2 {
             const comment = await LikeComment.findOne({
                 where: {
                     commentId: data.commentId,
-                    userId: data.userId
+                    userId: data.userId,
                 },
             });
             if (comment) {
-                if(comment.like == data.like) {
+                if (comment.like == data.like) {
                     const result = await LikeComment.findByIdAndDelete(comment.id);
                     if (result) {
                         return { code: 200, values: "Like on comment deleted successfully" };
                     }
                 }
-                const newLikeComment = await LikeComment.findByIdAndUpdate(comment.id, { $set: { like: comment.like ? false : true } }, { new: true });
+                const newLikeComment = await LikeComment.findByIdAndUpdate(
+                    comment.id,
+                    { $set: { like: comment.like ? false : true } },
+                    { new: true },
+                );
                 if (newLikeComment) {
                     return { code: 200, values: "Like on comment updated" };
                 }
@@ -95,7 +97,7 @@ export default class CommentServiceV1_2 {
                 const newLikeComment = new LikeComment({
                     like: data.like,
                     userId: data.userId,
-                    commentId: data.commentId
+                    commentId: data.commentId,
                 });
                 await newLikeComment.save();
                 return { code: 200, values: "Like on comment created" };
@@ -153,9 +155,7 @@ export default class CommentServiceV1_2 {
         try {
             const matchStage = {};
             matchStage[field] = value;
-            const pipeline = [
-                { $match: matchStage }
-            ];
+            const pipeline = [{ $match: matchStage }];
             const result = await Comment.aggregate(pipeline);
 
             if (result.length > 0) {

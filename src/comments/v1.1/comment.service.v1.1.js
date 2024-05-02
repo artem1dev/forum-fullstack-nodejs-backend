@@ -52,7 +52,7 @@ export default class CommentServiceV1_1 {
                 content: data.content,
                 parentId: data.parentId,
                 userId: data.userId,
-                postId: data.postId
+                postId: data.postId,
             });
             await newComment.save();
             return { code: 200, values: "Comment created" };
@@ -72,17 +72,21 @@ export default class CommentServiceV1_1 {
             const comment = await LikeComment.findOne({
                 where: {
                     commentId: data.commentId,
-                    userId: data.userId
+                    userId: data.userId,
                 },
             });
             if (comment) {
-                if(comment.like == data.like) {
+                if (comment.like == data.like) {
                     const result = await LikeComment.findByIdAndDelete(comment.id);
                     if (result) {
                         return { code: 200, values: "Like on comment deleted successfully" };
                     }
                 }
-                const newLikeComment = await LikeComment.findByIdAndUpdate(comment.id, { $set: { like: comment.like ? false : true } }, { new: true });
+                const newLikeComment = await LikeComment.findByIdAndUpdate(
+                    comment.id,
+                    { $set: { like: comment.like ? false : true } },
+                    { new: true },
+                );
                 if (newLikeComment) {
                     return { code: 200, values: "Like on comment updated" };
                 }
@@ -90,7 +94,7 @@ export default class CommentServiceV1_1 {
                 const newLikeComment = new LikeComment({
                     like: data.like,
                     userId: data.userId,
-                    commentId: data.commentId
+                    commentId: data.commentId,
                 });
                 await newLikeComment.save();
                 return { code: 200, values: "Like on comment created" };

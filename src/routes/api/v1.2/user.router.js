@@ -19,11 +19,7 @@ userRouter.get(
     tryCatch(userControllerV1_2.selectAll.bind(userControllerV1_2)),
 );
 
-userRouter.get(
-    "/:id",
-    validateRequestSchema,
-    tryCatch(userControllerV1_2.selectById.bind(userControllerV1_2)),
-);
+userRouter.get("/:id", validateRequestSchema, tryCatch(userControllerV1_2.selectById.bind(userControllerV1_2)));
 
 userRouter.post(
     "/",

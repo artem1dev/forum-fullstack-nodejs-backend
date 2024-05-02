@@ -51,7 +51,7 @@ export class CommentControllerV1_2 {
             content: body.content,
             parentId: body.parentId,
             userId: tokenData.userId,
-            postId: body.postId
+            postId: body.postId,
         };
         const result = await this.service.create(data);
         return { code: result.code, values: result.values };
@@ -72,7 +72,7 @@ export class CommentControllerV1_2 {
         const data = {
             like: body.like,
             commentId: id,
-            userId: tokenData.userId
+            userId: tokenData.userId,
         };
         const result = await this.service.setLike(data);
         return { code: result.code, values: result.values };

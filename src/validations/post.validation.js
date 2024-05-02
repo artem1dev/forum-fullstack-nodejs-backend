@@ -14,21 +14,12 @@ const checkPostOnCreate = [
 ];
 
 const checkPostOnUpdate = [
-    body("title")
-        .optional()
-        .isString()
-        .withMessage("Title must be a string"),
-    body("content")
-        .optional()
-        .isString()
-        .withMessage("Content must be a string"),
-    body("status")
-        .optional()
-        .isString()
-        .withMessage("Status must be a string"),
+    body("title").optional().isString().withMessage("Title must be a string"),
+    body("content").optional().isString().withMessage("Content must be a string"),
+    body("status").optional().isString().withMessage("Status must be a string"),
 ];
 
-const checkLikeOnPostOnCreate= [
+const checkLikeOnPostOnCreate = [
     body("like")
         .exists({ checkFalsy: true })
         .withMessage("like must be provided")

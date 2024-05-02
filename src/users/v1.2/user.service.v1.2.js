@@ -30,14 +30,12 @@ export default class UserServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await User.aggregate([
-              { $match: { _id: mongoose.Types.ObjectId(id) } },
-            ]);
-        
+            const result = await User.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
+
             if (result.length > 0) {
-              return { code: 200, values: result[0] };
+                return { code: 200, values: result[0] };
             } else {
-              return { code: 404, values: { status: "user_not_found" } };
+                return { code: 404, values: { status: "user_not_found" } };
             }
         } catch (error) {
             logger.error(`Error selecting user: ${error}`);
@@ -55,7 +53,7 @@ export default class UserServiceV1_2 {
             const newUser = new User({
                 login: data.login,
                 password: data.password,
-                role: data.role
+                role: data.role,
             });
             await newUser.save();
             return { code: 200, values: "User created" };
@@ -73,13 +71,7 @@ export default class UserServiceV1_2 {
      */
     async update(id, newData) {
         try {
-            const result = await User.updateOne(
-                { _id: id },
-                [
-                    { $set: newData }
-                ],
-                { new: true }
-            );
+            const result = await User.updateOne({ _id: id }, [{ $set: newData }], { new: true });
             if (result.nModified > 0) {
                 return { code: 200, values: "User updated" };
             } else if (result.n === 0) {
@@ -121,9 +113,7 @@ export default class UserServiceV1_2 {
         try {
             const matchStage = {};
             matchStage[field] = value;
-            const pipeline = [
-                { $match: matchStage }
-            ];
+            const pipeline = [{ $match: matchStage }];
             const result = await User.aggregate(pipeline);
 
             if (result.length > 0) {

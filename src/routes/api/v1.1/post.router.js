@@ -14,11 +14,7 @@ if (process.env.NODE_ENV !== "test") {
     postRouter.use(morgan("combined"));
 }
 
-postRouter.get(
-    "/",
-    validateRequestSchema,
-    tryCatch(postControllerV1_1.selectAll.bind(postControllerV1_1)),
-);
+postRouter.get("/", validateRequestSchema, tryCatch(postControllerV1_1.selectAll.bind(postControllerV1_1)));
 
 postRouter.get(
     "/:id",
@@ -27,11 +23,7 @@ postRouter.get(
     tryCatch(postControllerV1_1.selectById.bind(postControllerV1_1)),
 );
 
-postRouter.get(
-    "/user/:id",
-    validateRequestSchema,
-    tryCatch(postControllerV1_1.selectByUserId.bind(postControllerV1_1)),
-);
+postRouter.get("/user/:id", validateRequestSchema, tryCatch(postControllerV1_1.selectByUserId.bind(postControllerV1_1)));
 
 postRouter.post(
     "/",

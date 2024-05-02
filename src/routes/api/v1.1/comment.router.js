@@ -6,7 +6,11 @@ import commentControllerV1_1 from "../../../comments/v1.1/comment.controller.v1.
 import CommentServiceV1_1 from "../../../comments/v1.1/comment.service.v1.1.js";
 import { isCommentNotExist } from "../../../comments/comment.script.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
-import { checkCommentOnCreate, checkCommentOnUpdate, checkLikeOnCommentOnCreate } from "../../../validations/comment.validation.js";
+import {
+    checkCommentOnCreate,
+    checkCommentOnUpdate,
+    checkLikeOnCommentOnCreate,
+} from "../../../validations/comment.validation.js";
 
 const commentRouter = Router();
 
@@ -14,11 +18,7 @@ if (process.env.NODE_ENV !== "test") {
     commentRouter.use(morgan("combined"));
 }
 
-commentRouter.get(
-    "/",
-    validateRequestSchema,
-    tryCatch(commentControllerV1_1.selectAll.bind(commentControllerV1_1)),
-);
+commentRouter.get("/", validateRequestSchema, tryCatch(commentControllerV1_1.selectAll.bind(commentControllerV1_1)));
 
 commentRouter.get(
     "/:id",

@@ -63,7 +63,7 @@ export class PostControllerV1_1 {
             title: body.title,
             content: body.content,
             status: "active",
-            userId: tokenData.userId
+            userId: tokenData.userId,
         };
         const result = await this.service.create(data);
         return { code: result.code, values: result.values };
@@ -84,7 +84,7 @@ export class PostControllerV1_1 {
         const data = {
             like: body.like,
             postId: id,
-            userId: tokenData.userId
+            userId: tokenData.userId,
         };
         const result = await this.service.setLike(data);
         return { code: result.code, values: result.values };

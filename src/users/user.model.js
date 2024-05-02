@@ -6,23 +6,23 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true, // Ensures logins are unique across all users
-        trim: true
+        trim: true,
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
     profilePic: {
         type: String,
         required: true,
-        default: "default.png"
+        default: "default.png",
     },
     role: {
         type: String,
         required: true,
         enum: ["admin", "user"],
-        default: "user"
-    }
+        default: "user",
+    },
 });
 
 // Create a User model

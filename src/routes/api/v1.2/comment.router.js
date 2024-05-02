@@ -19,11 +19,7 @@ commentRouter.get(
     tryCatch(commentControllerV1_2.selectAll.bind(commentControllerV1_2)),
 );
 
-commentRouter.get(
-    "/:id",
-    validateRequestSchema,
-    tryCatch(commentControllerV1_2.selectById.bind(commentControllerV1_2)),
-);
+commentRouter.get("/:id", validateRequestSchema, tryCatch(commentControllerV1_2.selectById.bind(commentControllerV1_2)));
 
 commentRouter.post(
     "/",

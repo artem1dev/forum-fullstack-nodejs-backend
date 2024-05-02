@@ -34,14 +34,12 @@ export default class PostServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await Post.aggregate([
-              { $match: { _id: mongoose.Types.ObjectId(id) } },
-            ]);
-        
+            const result = await Post.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
+
             if (result.length > 0) {
-              return { code: 200, values: result[0] };
+                return { code: 200, values: result[0] };
             } else {
-              return { code: 404, values: { status: "post_not_found" } };
+                return { code: 404, values: { status: "post_not_found" } };
             }
         } catch (error) {
             logger.error(`Error selecting post: ${error}`);
@@ -60,7 +58,7 @@ export default class PostServiceV1_2 {
                 title: data.login,
                 content: data.content,
                 status: data.status,
-                userId: data.userId
+                userId: data.userId,
             });
             await newPost.save();
             return { code: 200, values: "Post created" };
@@ -80,17 +78,21 @@ export default class PostServiceV1_2 {
             const post = await LikePost.findOne({
                 where: {
                     postId: data.postId,
-                    userId: data.userId
+                    userId: data.userId,
                 },
             });
             if (post) {
-                if(post.like == data.like) {
+                if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {
                         return { code: 200, values: "Like on post deleted successfully" };
                     }
                 }
-                const newLikePost = await LikePost.findByIdAndUpdate(post.id, { $set: { like: post.like ? false : true } }, { new: true });
+                const newLikePost = await LikePost.findByIdAndUpdate(
+                    post.id,
+                    { $set: { like: post.like ? false : true } },
+                    { new: true },
+                );
                 if (newLikePost) {
                     return { code: 200, values: "Like on post updated" };
                 }
@@ -98,7 +100,7 @@ export default class PostServiceV1_2 {
                 const newLikePost = new LikePost({
                     like: data.like,
                     userId: data.userId,
-                    postId: data.postId
+                    postId: data.postId,
                 });
                 await newLikePost.save();
                 return { code: 200, values: "Like on post created" };
@@ -117,13 +119,7 @@ export default class PostServiceV1_2 {
      */
     async update(id, newData) {
         try {
-            const result = await Post.updateOne(
-                { _id: id },
-                [
-                    { $set: newData }
-                ],
-                { new: true }
-            );
+            const result = await Post.updateOne({ _id: id }, [{ $set: newData }], { new: true });
             if (result.nModified > 0) {
                 return { code: 200, values: "Post updated" };
             } else if (result.n === 0) {
@@ -165,9 +161,7 @@ export default class PostServiceV1_2 {
         try {
             const matchStage = {};
             matchStage[field] = value;
-            const pipeline = [
-                { $match: matchStage }
-            ];
+            const pipeline = [{ $match: matchStage }];
             const result = await Post.aggregate(pipeline);
 
             if (result.length > 0) {

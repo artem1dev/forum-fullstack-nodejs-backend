@@ -68,7 +68,7 @@ export default class UserServiceV1_1 {
             const newUser = new User({
                 login: data.login,
                 password: data.password,
-                role: data.role
+                role: data.role,
             });
             await newUser.save();
             return { code: 200, values: "User created" };

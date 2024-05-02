@@ -48,7 +48,7 @@ export class UserControllerV1_2 {
         const data = {
             login: body.login,
             password: body.password,
-            role: body.role
+            role: body.role,
         };
         const result = await this.service.create(data);
         return { code: result.code, values: result.values };
