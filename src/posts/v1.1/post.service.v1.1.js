@@ -47,8 +47,8 @@ export default class PostServiceV1_1 {
     }
 
     /**
-     * Retrieves a post by id
-     * @param {string} id - The post's id
+     * Set like
+     * @param {object} data - The input data
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async selectById(id) {
@@ -180,6 +180,10 @@ export default class PostServiceV1_1 {
                 },
             });
             if (post) {
+                const isSelf = await Post.findById(data.postId);
+                if (isSelf.userId == data.userId) {
+                    return { code: 400, values: "You cannot like self post!" };
+                }
                 if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {

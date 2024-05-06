@@ -11,14 +11,17 @@ export default class UserServiceV1_2 {
      */
     async selectAll() {
         try {
-            const users = await User.aggregate([]);
+            const users = await User.aggregate([
+                { $project: { password: 0, __v: 0 } }
+            ]);
+    
             if (users.length > 0) {
                 return { code: 200, values: users };
             } else {
                 return { code: 404, values: { status: "users_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting users: ${error}`);
+            console.error(`Error selecting users: ${error}`);
             return { code: 500, values: `Error selecting users: ${error}` };
         }
     }
@@ -30,16 +33,45 @@ export default class UserServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await User.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
-
-            if (result.length > 0) {
-                return { code: 200, values: result[0] };
+            // Using aggregation to find user and exclude password
+            const results = await User.aggregate([
+                { $match: { _id: mongoose.Types.ObjectId(id) } }, // Ensure that you match by ObjectID
+                { $project: { password: 0, __v: 0 } } // Exclude password and version key (__v)
+            ]).exec();
+    
+            const user = results[0]; // Aggregation returns an array, even if only one document matches
+    
+            if (user) {
+                return { code: 200, values: user };
             } else {
                 return { code: 404, values: { status: "user_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting user: ${error}`);
+            console.error(`Error selecting user: ${error}`);
             return { code: 500, values: `Error selecting user: ${error}` };
+        }
+    }
+
+    /**
+     * Retrieves a user by login
+     * @param {string} id - The user's login
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async selectByLogin(login) {
+        try {
+            const results = await User.aggregate([
+                { $match: { login: login } },
+                { $project: { password: 0, __v: 0 } }
+            ]);
+            const user = results[0];
+            if (user) {
+                return { code: 200, values: user };
+            } else {
+                return { code: 404, values: { status: "user_not_found" } };
+            }
+        } catch (error) {
+            console.error(`Error fetching user by login: ${error}`);
+            return { code: 500, values: `Error fetching user by login: ${error}` };
         }
     }
 

@@ -15,14 +15,64 @@ export default class PostServiceV1_2 {
      */
     async selectAll() {
         try {
-            const posts = await Post.aggregate([]);
+            const posts = await Post.aggregate([
+                { $match: {} },  // Assuming you want all posts, adjust as necessary
+                { $lookup: {
+                    from: User.collection.name,
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user"
+                }},
+                { $unwind: "$user" },
+                { $lookup: {
+                    from: LikePost.collection.name,
+                    localField: "_id",
+                    foreignField: "postId",
+                    as: "likes"
+                }},
+                { $lookup: {
+                    from: Comment.collection.name,
+                    localField: "_id",
+                    foreignField: "postId",
+                    as: "comments"
+                }},
+                { $addFields: {
+                    likeCount: {
+                        $size: {
+                            $filter: {
+                                input: "$likes",
+                                as: "like",
+                                cond: { $eq: ["$$like.like", true] }
+                            }
+                        }
+                    },
+                    dislikeCount: {
+                        $size: {
+                            $filter: {
+                                input: "$likes",
+                                as: "like",
+                                cond: { $eq: ["$$like.like", false] }
+                            }
+                        }
+                    },
+                    commentsCount: { $size: "$comments" },
+                    authorLogin: "$user.login",
+                    profilePic: "$user.profilePic"
+                }},
+                { $project: {
+                    "user": 0,
+                    "likes": 0,
+                    "comments": 0
+                }}
+            ]).exec();
+    
             if (posts.length > 0) {
                 return { code: 200, values: posts };
             } else {
                 return { code: 404, values: { status: "posts_not_found" } };
             }
         } catch (error) {
-            logger.error(`Error selecting posts: ${error}`);
+            console.error(`Error selecting posts: ${error}`);
             return { code: 500, values: `Error selecting posts: ${error}` };
         }
     }
@@ -34,19 +84,150 @@ export default class PostServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await Post.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
-
-            if (result.length > 0) {
-                return { code: 200, values: result[0] };
-            } else {
+            const results = await Post.aggregate([
+                { $match: { _id: mongoose.Types.ObjectId(postId) } },
+                {
+                    $lookup: {
+                        from: User.collection.name,
+                        localField: "userId",
+                        foreignField: "_id",
+                        as: "user"
+                    }
+                },
+                { $unwind: "$user" },
+                {
+                    $lookup: {
+                        from: LikePost.collection.name,
+                        localField: "_id",
+                        foreignField: "postId",
+                        as: "likes"
+                    }
+                },
+                {
+                    $addFields: {
+                        likeCount: { $size: { $filter: { input: "$likes", as: "item", cond: { $eq: ["$$item.like", true] } } } },
+                        dislikeCount: { $size: { $filter: { input: "$likes", as: "item", cond: { $eq: ["$$item.like", false] } } } }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: Comment.collection.name,
+                        localField: "_id",
+                        foreignField: "postId",
+                        as: "comments"
+                    }
+                },
+                { $unwind: { path: "$comments", preserveNullAndEmptyArrays: true } },
+                {
+                    $lookup: {
+                        from: LikeComment.collection.name,
+                        localField: "comments._id",
+                        foreignField: "commentId",
+                        as: "comments.likes"
+                    }
+                },
+                {
+                    $addFields: {
+                        "comments.likeCount": { $size: { $filter: { input: "$comments.likes", as: "item", cond: { $eq: ["$$item.like", true] } } } },
+                        "comments.dislikeCount": { $size: { $filter: { input: "$comments.likes", as: "item", cond: { $eq: ["$$item.like", false] } } } }
+                    }
+                },
+                { $group: {
+                    _id: "$_id",
+                    root: { $mergeObjects: "$$ROOT" },
+                    comments: { $push: "$comments" }
+                } },
+                { $replaceRoot: {
+                    newRoot: {
+                        $mergeObjects: ["$root", "$$ROOT"]
+                    }
+                } },
+                { $project: {
+                    root: 0,
+                    "comments.likes": 0
+                } }
+            ]);
+    
+            if (results.length === 0) {
                 return { code: 404, values: { status: "post_not_found" } };
             }
+    
+            const data = { ...results[0], commentsCount: results[0].comments.length };
+    
+            return { code: 200, values: data };
         } catch (error) {
-            logger.error(`Error selecting post: ${error}`);
+            console.error(`Error selecting post: ${error}`);
             return { code: 500, values: `Error selecting post: ${error}` };
         }
     }
 
+    /**
+     * Retrieves all posts by userId
+     * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
+     */
+    async selectByUserId(userId) {
+        try {
+            const results = await Post.aggregate([
+                { $match: { userId: mongoose.Types.ObjectId(userId) } },
+                { $lookup: {
+                    from: "users", // Assuming the collection name for User model is "users"
+                    localField: "userId",
+                    foreignField: "_id",
+                    as: "user"
+                }},
+                { $unwind: "$user" },
+                { $lookup: {
+                    from: "likeposts", // Assuming the collection name for LikePost model is "likeposts"
+                    localField: "_id",
+                    foreignField: "postId",
+                    as: "likes"
+                }},
+                { $lookup: {
+                    from: "comments", // Assuming the collection name for Comment model is "comments"
+                    localField: "_id",
+                    foreignField: "postId",
+                    as: "comments"
+                }},
+                { $addFields: {
+                    likeCount: {
+                        $size: {
+                            $filter: {
+                                input: "$likes",
+                                as: "like",
+                                cond: { $eq: ["$$like.like", true] }
+                            }
+                        }
+                    },
+                    dislikeCount: {
+                        $size: {
+                            $filter: {
+                                input: "$likes",
+                                as: "like",
+                                cond: { $eq: ["$$like.like", false] }
+                            }
+                        }
+                    },
+                    commentsCount: { $size: "$comments" },
+                    authorLogin: "$user.login",
+                    profilePic: "$user.profilePic"
+                }},
+                { $project: {
+                    likes: 0,
+                    user: 0,
+                    comments: 0
+                }}
+            ]);
+    
+            if (results.length > 0) {
+                return { code: 200, values: results };
+            } else {
+                return { code: 404, values: { status: "posts_not_found" } };
+            }
+        } catch (error) {
+            console.error(`Error selecting posts by userId: ${error}`);
+            return { code: 500, values: `Error selecting posts: ${error}` };
+        }
+    }
     /**
      * Creates a new post
      * @param {Object} data - Data for creating the post
@@ -69,34 +250,42 @@ export default class PostServiceV1_2 {
     }
 
     /**
-     * Delete a post by id
-     * @param {string} id - The post's id
+     * Set like
+     * @param {object} data - The input data
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async setLike(data) {
         try {
-            const post = await LikePost.findOne({
-                where: {
-                    postId: data.postId,
-                    userId: data.userId,
-                },
-            });
-            if (post) {
-                if (post.like == data.like) {
-                    const result = await LikePost.findByIdAndDelete(post.id);
+            // Find the like on the post by this user
+            const match = await LikePost.aggregate([
+                { $match: {
+                    postId: mongoose.Types.ObjectId(data.postId),
+                    userId: mongoose.Types.ObjectId(data.userId)
+                }}
+            ]);
+    
+            const postLike = match[0];
+    
+            if (postLike) {
+                if (postLike.like === data.like) {
+                    // User is toggling the like off
+                    const result = await LikePost.findByIdAndDelete(postLike._id);
                     if (result) {
                         return { code: 200, values: "Like on post deleted successfully" };
                     }
-                }
-                const newLikePost = await LikePost.findByIdAndUpdate(
-                    post.id,
-                    { $set: { like: post.like ? false : true } },
-                    { new: true },
-                );
-                if (newLikePost) {
-                    return { code: 200, values: "Like on post updated" };
+                } else {
+                    // Toggle the like state
+                    const updatedLikePost = await LikePost.findByIdAndUpdate(
+                        postLike._id,
+                        { $set: { like: !postLike.like } },
+                        { new: true }
+                    );
+                    if (updatedLikePost) {
+                        return { code: 200, values: "Like on post updated" };
+                    }
                 }
             } else {
+                // Create a new like if none existed
                 const newLikePost = new LikePost({
                     like: data.like,
                     userId: data.userId,
@@ -106,7 +295,7 @@ export default class PostServiceV1_2 {
                 return { code: 200, values: "Like on post created" };
             }
         } catch (error) {
-            logger.error(`Error setting like: ${error}`);
+            console.error(`Error setting like: ${error}`);
             return { code: 500, values: `Error setting like: ${error}` };
         }
     }

@@ -26,7 +26,7 @@ export default class CommentServiceV1_2 {
 
     /**
      * Retrieves a comment by id
-     * @param {string} id - The comment's id
+     * @param {string} id - The comment"s id
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async selectById(id) {
@@ -66,34 +66,71 @@ export default class CommentServiceV1_2 {
     }
 
     /**
-     * Delete a post by id
-     * @param {string} id - The post's id
+     * Set like
+     * @param {object} data - The input data
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async setLike(data) {
         try {
-            const comment = await LikeComment.findOne({
-                where: {
-                    commentId: data.commentId,
-                    userId: data.userId,
+            // Aggregate to check if the user is trying to like their own comment and fetch existing like
+            const results = await Comment.aggregate([
+                {
+                    $match: {
+                        _id: mongoose.Types.ObjectId(data.commentId)
+                    }
                 },
-            });
-            if (comment) {
-                if (comment.like == data.like) {
-                    const result = await LikeComment.findByIdAndDelete(comment.id);
+                {
+                    $lookup: {
+                        from: "likecomments", // This should match the collection name for LikeComment model
+                        localField: "_id",
+                        foreignField: "commentId",
+                        as: "likeInfo"
+                    }
+                },
+                {
+                    $unwind: {
+                        path: "$likeInfo",
+                        preserveNullAndEmptyArrays: true
+                    }
+                },
+                {
+                    $match: {
+                        "likeInfo.userId": mongoose.Types.ObjectId(data.userId)
+                    }
+                }
+            ]);
+    
+            const commentDetails = results[0];
+            if (!commentDetails) {
+                return { code: 404, values: "Comment not found" };
+            }
+    
+            // Check if user is liking their own comment
+            if (commentDetails.userId.equals(data.userId)) {
+                return { code: 400, values: "You cannot like your own comment!" };
+            }
+    
+            // Existing like handling
+            if (commentDetails.likeInfo) {
+                if (commentDetails.likeInfo.like === data.like) {
+                    // Delete if same like
+                    const result = await LikeComment.findByIdAndDelete(commentDetails.likeInfo._id);
                     if (result) {
                         return { code: 200, values: "Like on comment deleted successfully" };
                     }
-                }
-                const newLikeComment = await LikeComment.findByIdAndUpdate(
-                    comment.id,
-                    { $set: { like: comment.like ? false : true } },
-                    { new: true },
-                );
-                if (newLikeComment) {
-                    return { code: 200, values: "Like on comment updated" };
+                } else {
+                    // Update like
+                    const updatedLike = await LikeComment.findByIdAndUpdate(
+                        commentDetails.likeInfo._id,
+                        { $set: { like: !commentDetails.likeInfo.like } },
+                        { new: true }
+                    );
+                    if (updatedLike) {
+                        return { code: 200, values: "Like on comment updated" };
+                    }
                 }
             } else {
+                // Create a new like
                 const newLikeComment = new LikeComment({
                     like: data.like,
                     userId: data.userId,
@@ -103,7 +140,7 @@ export default class CommentServiceV1_2 {
                 return { code: 200, values: "Like on comment created" };
             }
         } catch (error) {
-            logger.error(`Error setting like: ${error}`);
+            console.error(`Error setting like: ${error}`);
             return { code: 500, values: `Error setting like: ${error}` };
         }
     }

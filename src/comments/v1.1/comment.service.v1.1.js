@@ -63,8 +63,8 @@ export default class CommentServiceV1_1 {
     }
 
     /**
-     * Delete a post by id
-     * @param {string} id - The post's id
+     * Set like
+     * @param {object} data - The input data
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
      */
     async setLike(data) {
@@ -76,6 +76,10 @@ export default class CommentServiceV1_1 {
                 },
             });
             if (comment) {
+                const isSelf = await Comment.findById(data.commentId);
+                if (isSelf.userId == data.userId) {
+                    return { code: 400, values: "You cannot like self comment!" };
+                }
                 if (comment.like == data.like) {
                     const result = await LikeComment.findByIdAndDelete(comment.id);
                     if (result) {
