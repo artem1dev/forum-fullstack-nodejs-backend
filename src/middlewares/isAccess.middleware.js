@@ -11,8 +11,8 @@ import response from "./response.middleware.js";
  * @returns {void}
  */
 export const isAdmin = (req, res, next) => {
-    const { token } = req.headers;
-    const userData = jwt.verify(token, process.env.JWT_SECRET);
+    const { authorization } = req.headers;
+    const userData = jwt.verify(authorization, process.env.JWT_SECRET);
     if (userData.role !== "admin") {
         return response(403, { message: "Access denied" }, res);
     }
@@ -27,11 +27,11 @@ export const isAdmin = (req, res, next) => {
  * @returns {void}
  */
 export const isAdminOrAccess = (req, res, next) => {
-    const { token } = req.headers;
+    const { authorization } = req.headers;
     const { body } = req;
     const { id } = req.params;
 
-    const userData = jwt.verify(token, process.env.JWT_SECRET);
+    const userData = jwt.verify(authorization, process.env.JWT_SECRET);
     if (userData.role !== "admin") {
         if (body.userId == userData.userId || id == userData.userId) {
             next();
@@ -49,9 +49,9 @@ export const isAdminOrAccess = (req, res, next) => {
  * @returns {void}
  */
 export const isAuthorized = (req, res, next) => {
-    const { token } = req.headers;
+    const { authorization } = req.headers;
     try {
-        jwt.verify(token, process.env.JWT_SECRET);
+        jwt.verify(authorization, process.env.JWT_SECRET);
         next();
     } catch (e) {
         response(401, { message: "Unauthorized user" }, res);
