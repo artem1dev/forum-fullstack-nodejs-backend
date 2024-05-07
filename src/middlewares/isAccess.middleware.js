@@ -35,6 +35,7 @@ export const isAdminOrAccess = (req, res, next) => {
     if (userData.role !== "admin") {
         if (body.userId == userData.userId || id == userData.userId) {
             next();
+            return;
         }
         return response(403, { message: "Access denied" }, res);
     }

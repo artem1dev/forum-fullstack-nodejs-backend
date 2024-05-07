@@ -7,26 +7,23 @@ const checkCommentOnCreate = [
         .isString()
         .withMessage("Content must be a string"),
     body("parentId")
-        .exists({ checkFalsy: true })
-        .withMessage("parentId must be provided")
-        .isInt()
-        .withMessage("parentId must be a number"),
+        .optional(),
     body("postId")
         .exists({ checkFalsy: true })
         .withMessage("postId must be provided")
-        .isInt()
-        .withMessage("postId must be a number"),
+        .isString()
+        .withMessage("postId must be a string"),
 ];
 
 const checkCommentOnUpdate = [
     body("content").optional().isString().withMessage("Content must be a string"),
-    body("parentId").optional().isInt().withMessage("parentId must be a number"),
-    body("postId").optional().isInt().withMessage("postId must be a number"),
+    body("parentId").optional().isString().withMessage("parentId must be a string"),
+    body("postId").optional().isString().withMessage("postId must be a string"),
 ];
 
 const checkLikeOnCommentOnCreate = [
     body("like")
-        .exists({ checkFalsy: true })
+        .exists()
         .withMessage("like must be provided")
         .isBoolean()
         .withMessage("like must be a boolean"),

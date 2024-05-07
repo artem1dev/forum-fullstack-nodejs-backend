@@ -21,7 +21,7 @@ const checkPostOnUpdate = [
 
 const checkLikeOnPostOnCreate = [
     body("like")
-        .exists({ checkFalsy: true })
+        .exists()
         .withMessage("like must be provided")
         .isBoolean()
         .withMessage("like must be a boolean"),

@@ -18,8 +18,8 @@ export default class PostServiceV1_1 {
             if (posts.length > 0) {
                 for (const post of posts) {
                     const user = await User.findById(post.userId.toString());
-                    const likes = await LikePost.find({ postId: post.id });
-                    const comments = await Comment.find({ postId: post.id });
+                    const likes = await LikePost.find({ postId: post._id.toString() });
+                    const comments = await Comment.find({ postId: post._id.toString() });
                     const counts = {
                         true: 0,
                         false: 0,
@@ -68,9 +68,10 @@ export default class PostServiceV1_1 {
                         counts.false += 1;
                     }
                 });
-                const comments = await Comment.find({ postId: id });
+                const comments = await Comment.find({ postId: id }).lean();
                 for (const comment of comments) {
-                    const likesComment = await LikeComment.find({ commentId: comment.id });
+                    const userComment = await User.findById(comment.userId.toString());
+                    const likesComment = await LikeComment.find({ commentId: comment._id });
                     const commentCounts = {
                         true: 0,
                         false: 0,
@@ -82,6 +83,7 @@ export default class PostServiceV1_1 {
                             commentCounts.false += 1;
                         }
                     });
+                    comment.login = userComment.login;
                     comment.likeCounts = commentCounts.true;
                     comment.dislikeCounts = commentCounts.false;
                 }
@@ -174,16 +176,16 @@ export default class PostServiceV1_1 {
     async setLike(data) {
         try {
             const post = await LikePost.findOne({
-                where: {
-                    postId: data.postId,
-                    userId: data.userId,
-                },
+                postId: data.postId,
+                userId: data.userId,
             });
+            const isSelf = await Post.findById(data.postId);
+            if (isSelf.userId == data.userId) {
+                return { code: 400, values: "You cannot like self post!" };
+            }
             if (post) {
-                const isSelf = await Post.findById(data.postId);
-                if (isSelf.userId == data.userId) {
-                    return { code: 400, values: "You cannot like self post!" };
-                }
+                console.log(post.like)
+                console.log(data.like)
                 if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {

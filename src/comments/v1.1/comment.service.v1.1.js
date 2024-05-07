@@ -70,16 +70,14 @@ export default class CommentServiceV1_1 {
     async setLike(data) {
         try {
             const comment = await LikeComment.findOne({
-                where: {
-                    commentId: data.commentId,
-                    userId: data.userId,
-                },
+                commentId: data.commentId,
+                userId: data.userId,
             });
+            const isSelf = await Comment.findById(data.commentId);
+            if (isSelf.userId == data.userId) {
+                return { code: 400, values: "You cannot like self comment!" };
+            }
             if (comment) {
-                const isSelf = await Comment.findById(data.commentId);
-                if (isSelf.userId == data.userId) {
-                    return { code: 400, values: "You cannot like self comment!" };
-                }
                 if (comment.like == data.like) {
                     const result = await LikeComment.findByIdAndDelete(comment.id);
                     if (result) {
