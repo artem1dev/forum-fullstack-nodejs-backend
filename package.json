@@ -7,8 +7,7 @@
     "scripts": {
         "start": "cross-env NODE_ENV=production node ./src/index.js",
         "dev": "cross-env NODE_ENV=development nodemon ./src/index.js",
-        "prettier": "prettier --check **/*.js",
-        "prettier:fix": "prettier --write **/*.js"
+        "prettier": "prettier --write **/*.js"
     },
     "author": "",
     "license": "ISC",
