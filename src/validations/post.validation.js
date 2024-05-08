@@ -20,11 +20,7 @@ const checkPostOnUpdate = [
 ];
 
 const checkLikeOnPostOnCreate = [
-    body("like")
-        .exists()
-        .withMessage("like must be provided")
-        .isBoolean()
-        .withMessage("like must be a boolean"),
+    body("like").exists().withMessage("like must be provided").isBoolean().withMessage("like must be a boolean"),
 ];
 
 export { checkPostOnCreate, checkPostOnUpdate, checkLikeOnPostOnCreate };

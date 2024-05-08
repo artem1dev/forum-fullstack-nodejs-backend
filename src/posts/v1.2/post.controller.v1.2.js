@@ -47,7 +47,7 @@ export class PostControllerV1_2 {
         const result = await this.service.selectByUserId(id);
         return { code: result.code, values: result.values };
     }
-    
+
     /**
      * Creates a new post.
      * @param {import("express").Request} req The Express request object.

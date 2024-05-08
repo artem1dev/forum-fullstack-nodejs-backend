@@ -6,8 +6,7 @@ const checkCommentOnCreate = [
         .withMessage("Content must be provided")
         .isString()
         .withMessage("Content must be a string"),
-    body("parentId")
-        .optional(),
+    body("parentId").optional(),
     body("postId")
         .exists({ checkFalsy: true })
         .withMessage("postId must be provided")
@@ -22,11 +21,7 @@ const checkCommentOnUpdate = [
 ];
 
 const checkLikeOnCommentOnCreate = [
-    body("like")
-        .exists()
-        .withMessage("like must be provided")
-        .isBoolean()
-        .withMessage("like must be a boolean"),
+    body("like").exists().withMessage("like must be provided").isBoolean().withMessage("like must be a boolean"),
 ];
 
 export { checkCommentOnCreate, checkCommentOnUpdate, checkLikeOnCommentOnCreate };

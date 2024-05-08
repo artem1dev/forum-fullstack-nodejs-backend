@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import logger from "../../config/logger.js";
 import Comment from "../comment.model.js";
 import LikeComment from "../likecomment.model.js";
@@ -12,7 +14,7 @@ export default class CommentServiceV1_2 {
      */
     async selectAll() {
         try {
-            const comments = await Comment.aggregate([]);
+            const comments = await Comment.aggregate([]).exec();
             if (comments.length > 0) {
                 return { code: 200, values: comments };
             } else {
@@ -31,7 +33,7 @@ export default class CommentServiceV1_2 {
      */
     async selectById(id) {
         try {
-            const result = await Comment.aggregate([{ $match: { _id: mongoose.Types.ObjectId(id) } }]);
+            const result = await Comment.aggregate([{ $match: { _id: new mongoose.Types.ObjectId(id) } }]).exec();
 
             if (result.length > 0) {
                 return { code: 200, values: result[0] };
@@ -76,40 +78,40 @@ export default class CommentServiceV1_2 {
             const results = await Comment.aggregate([
                 {
                     $match: {
-                        _id: mongoose.Types.ObjectId(data.commentId)
-                    }
+                        _id: new mongoose.Types.ObjectId(data.commentId),
+                    },
                 },
                 {
                     $lookup: {
                         from: "likecomments", // This should match the collection name for LikeComment model
                         localField: "_id",
                         foreignField: "commentId",
-                        as: "likeInfo"
-                    }
+                        as: "likeInfo",
+                    },
                 },
                 {
                     $unwind: {
                         path: "$likeInfo",
-                        preserveNullAndEmptyArrays: true
-                    }
+                        preserveNullAndEmptyArrays: true,
+                    },
                 },
                 {
                     $match: {
-                        "likeInfo.userId": mongoose.Types.ObjectId(data.userId)
-                    }
-                }
-            ]);
-    
+                        "likeInfo.userId": new mongoose.Types.ObjectId(data.userId),
+                    },
+                },
+            ]).exec();
+
             const commentDetails = results[0];
             if (!commentDetails) {
                 return { code: 404, values: "Comment not found" };
             }
-    
+
             // Check if user is liking their own comment
             if (commentDetails.userId.equals(data.userId)) {
                 return { code: 400, values: "You cannot like your own comment!" };
             }
-    
+
             // Existing like handling
             if (commentDetails.likeInfo) {
                 if (commentDetails.likeInfo.like === data.like) {
@@ -123,7 +125,7 @@ export default class CommentServiceV1_2 {
                     const updatedLike = await LikeComment.findByIdAndUpdate(
                         commentDetails.likeInfo._id,
                         { $set: { like: !commentDetails.likeInfo.like } },
-                        { new: true }
+                        { new: true },
                     );
                     if (updatedLike) {
                         return { code: 200, values: "Like on comment updated" };
@@ -140,7 +142,7 @@ export default class CommentServiceV1_2 {
                 return { code: 200, values: "Like on comment created" };
             }
         } catch (error) {
-            console.error(`Error setting like: ${error}`);
+            logger.error(`Error setting like: ${error}`);
             return { code: 500, values: `Error setting like: ${error}` };
         }
     }
@@ -193,7 +195,7 @@ export default class CommentServiceV1_2 {
             const matchStage = {};
             matchStage[field] = value;
             const pipeline = [{ $match: matchStage }];
-            const result = await Comment.aggregate(pipeline);
+            const result = await Comment.aggregate(pipeline).exec();
 
             if (result.length > 0) {
                 return result[0];

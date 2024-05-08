@@ -68,7 +68,7 @@ export default class PostServiceV1_1 {
                         counts.false += 1;
                     }
                 });
-                const comments = await Comment.find({ postId: id }).lean();
+                const comments = await Comment.find({ postId: id }).lean().exec();
                 for (const comment of comments) {
                     const userComment = await User.findById(comment.userId.toString());
                     const likesComment = await LikeComment.find({ commentId: comment._id });
@@ -87,6 +87,18 @@ export default class PostServiceV1_1 {
                     comment.likeCounts = commentCounts.true;
                     comment.dislikeCounts = commentCounts.false;
                 }
+                const buildTree = (parentId = null) => {
+                    try {
+                        return comments
+                            .filter((comment) => (comment.parentId ? comment.parentId.toString() : null) === parentId)
+                            .map((comment) => ({
+                                ...comment,
+                                replies: buildTree(comment._id.toString()),
+                            }));
+                    } catch (error) {
+                        console.log(error);
+                    }
+                };
                 const data = {
                     id: post.id,
                     title: post.title,
@@ -98,7 +110,7 @@ export default class PostServiceV1_1 {
                     likeCount: counts.true,
                     dislikeCount: counts.false,
                     commentsCount: comments.length,
-                    comments: comments,
+                    comments: buildTree(null),
                 };
                 return { code: 200, values: data };
             }
@@ -108,7 +120,6 @@ export default class PostServiceV1_1 {
             return { code: 500, values: `Error selecting post: ${error}` };
         }
     }
-
     /**
      * Retrieves all posts by userId
      * @returns {Promise<{ code: number, values: any }>} Promise containing code and values
@@ -184,8 +195,8 @@ export default class PostServiceV1_1 {
                 return { code: 400, values: "You cannot like self post!" };
             }
             if (post) {
-                console.log(post.like)
-                console.log(data.like)
+                console.log(post.like);
+                console.log(data.like);
                 if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {

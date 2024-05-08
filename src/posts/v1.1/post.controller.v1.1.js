@@ -79,7 +79,7 @@ export class PostControllerV1_1 {
         mongoSanitize.sanitize(req.body);
         const { body } = req;
         const { id } = req.params;
-        const { authorization  } = req.headers;
+        const { authorization } = req.headers;
         const tokenData = jwt.verify(authorization, process.env.JWT_SECRET);
         const data = {
             like: body.like,

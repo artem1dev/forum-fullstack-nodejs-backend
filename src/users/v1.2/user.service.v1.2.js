@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+
 import logger from "../../config/logger.js";
 import User from "../user.model.js";
 
@@ -11,17 +13,15 @@ export default class UserServiceV1_2 {
      */
     async selectAll() {
         try {
-            const users = await User.aggregate([
-                { $project: { password: 0, __v: 0 } }
-            ]);
-    
+            const users = await User.aggregate([{ $project: { password: 0, __v: 0 } }]).exec();
+
             if (users.length > 0) {
                 return { code: 200, values: users };
             } else {
                 return { code: 404, values: { status: "users_not_found" } };
             }
         } catch (error) {
-            console.error(`Error selecting users: ${error}`);
+            logger.error(`Error selecting users: ${error}`);
             return { code: 500, values: `Error selecting users: ${error}` };
         }
     }
@@ -35,19 +35,19 @@ export default class UserServiceV1_2 {
         try {
             // Using aggregation to find user and exclude password
             const results = await User.aggregate([
-                { $match: { _id: mongoose.Types.ObjectId(id) } }, // Ensure that you match by ObjectID
-                { $project: { password: 0, __v: 0 } } // Exclude password and version key (__v)
+                { $match: { _id: new mongoose.Types.ObjectId(id) } }, // Ensure that you match by ObjectID
+                { $project: { password: 0, __v: 0 } }, // Exclude password and version key (__v)
             ]).exec();
-    
+
             const user = results[0]; // Aggregation returns an array, even if only one document matches
-    
+
             if (user) {
                 return { code: 200, values: user };
             } else {
                 return { code: 404, values: { status: "user_not_found" } };
             }
         } catch (error) {
-            console.error(`Error selecting user: ${error}`);
+            logger.error(`Error selecting user: ${error}`);
             return { code: 500, values: `Error selecting user: ${error}` };
         }
     }
@@ -59,10 +59,7 @@ export default class UserServiceV1_2 {
      */
     async selectByLogin(login) {
         try {
-            const results = await User.aggregate([
-                { $match: { login: login } },
-                { $project: { password: 0, __v: 0 } }
-            ]);
+            const results = await User.aggregate([{ $match: { login: login } }, { $project: { password: 0, __v: 0 } }]).exec();
             const user = results[0];
             if (user) {
                 return { code: 200, values: user };
@@ -70,7 +67,7 @@ export default class UserServiceV1_2 {
                 return { code: 404, values: { status: "user_not_found" } };
             }
         } catch (error) {
-            console.error(`Error fetching user by login: ${error}`);
+            logger.error(`Error fetching user by login: ${error}`);
             return { code: 500, values: `Error fetching user by login: ${error}` };
         }
     }
@@ -146,7 +143,7 @@ export default class UserServiceV1_2 {
             const matchStage = {};
             matchStage[field] = value;
             const pipeline = [{ $match: matchStage }];
-            const result = await User.aggregate(pipeline);
+            const result = await User.aggregate(pipeline).exec();
 
             if (result.length > 0) {
                 return result[0];
