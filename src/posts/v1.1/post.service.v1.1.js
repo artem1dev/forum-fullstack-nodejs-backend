@@ -96,7 +96,7 @@ export default class PostServiceV1_1 {
                                 replies: buildTree(comment._id.toString()),
                             }));
                     } catch (error) {
-                        console.log(error);
+                        logger.error(error);
                     }
                 };
                 const data = {
@@ -195,8 +195,6 @@ export default class PostServiceV1_1 {
                 return { code: 400, values: "You cannot like self post!" };
             }
             if (post) {
-                console.log(post.like);
-                console.log(data.like);
                 if (post.like == data.like) {
                     const result = await LikePost.findByIdAndDelete(post.id);
                     if (result) {
