@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import commentControllerV1_2 from "../../../comments/v1.2/comment.controller.v1.2.js";
 import CommentServiceV1_2 from "../../../comments/v1.2/comment.service.v1.2.js";
-import { isCommentNotExist } from "../../../comments/comment.script.js";
+import { isCommentNotExist } from "../../../comments/comment.middleware.js";
 import { validateRequestSchema, tryCatch, isAdmin, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import {
     checkCommentOnCreate,

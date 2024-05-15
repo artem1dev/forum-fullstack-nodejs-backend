@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import logger from "../../config/logger.js";
+import logger from "../../logger/logger.js";
 import User from "../../users/user.model.js";
 import Post from "../post.model.js";
 import LikePost from "../likepost.model.js";

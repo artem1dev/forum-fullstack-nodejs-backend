@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import postControllerV1_1 from "../../../posts/v1.1/post.controller.v1.1.js";
 import PostServiceV1_1 from "../../../posts/v1.1/post.service.v1.1.js";
-import { isPostNotExist } from "../../../posts/post.script.js";
+import { isPostNotExist } from "../../../posts/post.middleware.js";
 import { validateRequestSchema, tryCatch, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkPostOnCreate, checkPostOnUpdate, checkLikeOnPostOnCreate } from "../../../validations/post.validation.js";
 

@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-import logger from "../../config/logger.js";
+import logger from "../../logger/logger.js";
 import Comment from "../comment.model.js";
 import LikeComment from "../likecomment.model.js";
 

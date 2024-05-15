@@ -4,7 +4,7 @@ import "dotenv/config";
 
 import userControllerV1_2 from "../../../users/v1.2/user.controller.v1.2.js";
 import UserServiceV1_2 from "../../../users/v1.2/user.service.v1.2.js";
-import { isUserWithLoginExist, isUserNotExist } from "../../../users/user.script.js";
+import { isUserWithLoginExist, isUserNotExist } from "../../../users/user.middleware.js";
 import { validateRequestSchema, tryCatch, isAdmin, isAuthorized, isAdminOrAccess } from "../../../middlewares/index.js";
 import { checkUserOnCreate, checkUserOnUpdate } from "../../../validations/user.validation.js";
 
